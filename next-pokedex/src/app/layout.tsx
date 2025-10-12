@@ -1,6 +1,6 @@
 import Header from "@/components/header";
 import type { Metadata } from "next";
-//import "./globals.css"; ←このファイルをいじると全体のCSSが変わる
+import "./globals.css"; //←このファイルをいじると全体のCSSが変わる
 
 export const metadata: Metadata = {
   title: "ポケモン図鑑",
