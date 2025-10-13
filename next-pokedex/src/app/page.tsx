@@ -13,7 +13,8 @@ export default function Home() {
   return (
     <div>
       <main>
-        <p>TOPページだよ！</p>
+        <h1>ポケモン図鑑へようこそ</h1>
+        <p>お気に入りのポケモンを探してみよう！</p>
         
         <Card>
           <CardHeader>
@@ -35,6 +36,7 @@ export default function Home() {
           </CardContent>
         </Card>
 
+        <p>このアプリは<a href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer">PokéAPI</a>を使用しています</p>
       </main>
       <footer>
 
