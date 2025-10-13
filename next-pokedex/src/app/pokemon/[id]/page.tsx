@@ -8,23 +8,23 @@ export default async function PokemonPage({ params }: { params: { id: string }})
     return (
         <main>
             <p>{params.id}</p>
-            <h1>{pokemon.name}</h1>
+            <h2>{pokemon.name}</h2>
+            <img alt="{pokemon.name}"></img>
             <div>
-                <h2>基本情報</h2>
+                <h3>基本情報</h3>
                 <p>分類：</p>
-                <p>高さ：</p>
-                <p>重さ：</p>
+                <p>高さ：{pokemon.height}</p>
+                <p>重さ：{pokemon.weight}</p>
             </div>
             <div>
-                <h2>タイプ</h2>
-                <p>〇〇</p>
+                <h3>タイプ</h3>
+                <p>{pokemon.types}</p>
             </div>
             <div>
-                <h2>特性</h2>
+                <h3>特性</h3>
                 <p>特性１</p>
                 <p>特性２</p>
             </div>
-            
         </main>
 
     );
