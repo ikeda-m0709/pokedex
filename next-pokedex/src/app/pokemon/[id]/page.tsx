@@ -3,11 +3,11 @@ import { fetchPokemon } from "@/lib/pokeapi"
 <p>ここが個々のカード詳細</p>
 
 export default async function PokemonPage({ params }: { params: { id: string }}) {
-    const pokemon = await fetchPokemon(params.id);
+    const pokemon = await fetchPokemon({params});
 
     return (
         <main>
-            <p>{params.id}</p>
+            <p>{pokemon.id}</p>
             <h2>{pokemon.name}</h2>
             <img alt="{pokemon.name}"></img>
             <div>
