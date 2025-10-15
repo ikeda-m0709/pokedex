@@ -12,7 +12,7 @@ export async function fetchPokemon({ params }: { params: { id: string }}) {
     return {
         id: data.id,
         name: data.name,
-        sprites: data.sprites,
+        imageUrl: data.sprites.other['official-artwork'].front_default ?? data.sprites.front_default,
         height: data.height,
         weight: data.weight,
         types: data.types.map((t: PokemonType) => t.type.name),
