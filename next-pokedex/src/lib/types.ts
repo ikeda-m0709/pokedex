@@ -47,14 +47,7 @@ export interface Pokemon {
   weight: number;
   types: PokemonType[];
   sprites: PokemonSprites;
-  abilities: {
-    ability: {
-      name: string;
-      url: string;
-    };
-    is_hidden: boolean;
-    slot: number;
-  }[];
+  abilities: PokemonAbility[];
 }
 
 ///pokemon-species/{id} のレスポンス型（分類・日本語名など）
@@ -74,6 +67,23 @@ export interface PokemonSpeciesDetail {
 }
 
 //特性情報（名前と効果）
+export interface PokemonAbility {
+      ability: {
+      name: string;
+      url: string;
+    };
+    is_hidden: boolean;
+    slot: number;
+}
+
+//PokéAPI の /ability/{id} のレスポンスに含まれる effect_entries は下記のような配列
+export interface EffectEntry {
+  effect: string,
+  language: {
+    name: string;
+  };
+}
+
 export interface ProcessedAbility {
   name: string;
   effect: string;
