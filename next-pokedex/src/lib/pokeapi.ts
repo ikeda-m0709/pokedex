@@ -10,19 +10,6 @@ export async function fetchPokemon({ params }: { params: { id: string }}): Promi
     if(!res.ok) return notFound();
     const data = await res.json();
 
-    //1ポケモンのうち、複数のabilityがあるので、型も配列になる
-    const abilities: ProcessedAbility[] = await Promise.all(
-        data.abilities.map(async (a: PokemonAbility) => {
-            const abilityRes = await fetch(a.ability.url);
-            const abilityData = await abilityRes.json();
-            const effect = abilityData.effect_entries.find((e: EffectEntry) => e.language.name === "ja")?.effect ?? "効果不明";
-            return {
-                name: a.ability.name,
-                effect,
-            };
-        })
-    );
-
     //日本語データ取得
     const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${params.id}`);
     if(!speciesRes.ok) return notFound();
@@ -30,6 +17,21 @@ export async function fetchPokemon({ params }: { params: { id: string }}): Promi
 
     const japaneseName = speciesDate.names.find(n => n.language.name === "ja")?.name ?? "不明";
     const genus = speciesDate.genera.find(g => g.language.name === "ja")?.genus ?? "不明";
+
+
+    //1ポケモンのうち、複数のabilityがあるので、型も配列になる
+    const abilities: ProcessedAbility[] = await Promise.all(
+        data.abilities.map(async (a: PokemonAbility) => {
+            const abilityRes = await fetch(a.ability.url);
+            const abilityData = await abilityRes.json();
+            const japaneseAbilityName = abilityData.names.find((n: { name:string; language: { name: string }}) => n.language.name === "ja")?.name ?? a.ability.name;
+            const effect = abilityData.effect_entries.find((e: EffectEntry) => e.language.name === "ja")?.effect ?? "効果不明";
+            return {
+                name: japaneseAbilityName,
+                effect,
+            };
+        })
+    );
 
     return {
         id: data.id,
