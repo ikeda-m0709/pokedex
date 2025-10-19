@@ -36,10 +36,9 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <p>このアプリは<a href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer">PokéAPI</a>を使用しています</p>
       </main>
       <footer>
-
+        <p>このアプリは<a href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer">PokéAPI</a>を使用しています</p>
       </footer>
     </div>
   );

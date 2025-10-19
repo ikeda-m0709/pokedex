@@ -1,4 +1,4 @@
-import PokemonCard from "@/components/card";
+import PokemonCardDetail from "@/components/cardDetail";
 import { fetchPokemon } from "@/lib/pokeapi"
 import Link from 'next/link';
 import { buttonVariants } from "@/components/ui/button"
@@ -30,7 +30,7 @@ export default async function PokemonPage({ params }: { params: { id: string }})
                     </Link>
                 )}
             </div>
-            <PokemonCard  pokemon={pokemon}/>
+            <PokemonCardDetail  pokemon={pokemon}/>
             <Link className={buttonVariants({ variant: "default" })} href="/pokemon">一覧へ</Link>
         </div>
     );

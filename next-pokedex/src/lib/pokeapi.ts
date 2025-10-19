@@ -2,8 +2,9 @@
 //ここからそれぞれのページやコンポーネントにインポートすること
 
 import { notFound } from 'next/navigation';
-import { PokemonType, ProcessedPokemon, PokemonSpeciesDetail, ProcessedAbility, PokemonAbility, EffectEntry } from './types';
+import { PokemonType, ProcessedPokemon, PokemonSpeciesDetail, ProcessedAbility, PokemonAbility, EffectEntry, NamedApiResource } from './types';
 
+//ポケモンのデータ取得（日本語含む）
 export async function fetchPokemon({ params }: { params: { id: string }}): Promise<ProcessedPokemon> {
    //言語に依らないデータ取得
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${params.id}`);
@@ -53,4 +54,25 @@ export async function fetchPokemon({ params }: { params: { id: string }}): Promi
         genus,
         abilities
     };
+}
+
+//一覧ページの取得
+export async function getProcessdePokemonList(page: number): Promise<ProcessedPokemon[]> {
+    const limit = 20;
+    const offset = (page - 1) * 20;
+    
+    //PokeAPIからの一覧取得
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
+    if(!res) return notFound();
+    const data = await res.json();
+    const results = data.results as NamedApiResource[];
+
+    //個別ポケモンデータの取得
+    const pokemons = await Promise.all(
+        results.map(async (pokemon) => {
+            const id = pokemon.url.split("/").filter(Boolean).pop();
+            return await fetchPokemon({params: {id: id!}});
+        })
+    );
+    return pokemons;
 }
