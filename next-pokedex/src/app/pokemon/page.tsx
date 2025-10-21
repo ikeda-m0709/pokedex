@@ -1,5 +1,7 @@
 import PokemonCard from '@/components/card';
+import { getTotalPokemonCount } from '@/lib/pokeapi'
 import { getProcessdePokemonList } from '@/lib/pokeapi'
+import { getPaginationRange } from '@/lib/pagination'
 import React from 'react'
 import {
   Pagination,
@@ -14,6 +16,8 @@ import {
   export default async function PokemonListContetnt({ searchParams}: { searchParams: {page: string}}) {
     const currentPage = Number(searchParams.page) || 1;
     const pokemons = await getProcessdePokemonList(currentPage);
+    const totalCount = await getTotalPokemonCount();
+    const totalPages = Math.ceil(totalCount / 20);
 
   return (
     <div>
@@ -27,35 +31,41 @@ import {
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious href={`/pokemon?page=${currentPage - 1}`} />
-            </PaginationItem>
-            {currentPage - 2 > 0 &&
+              <PaginationPrevious 
+                href={currentPage > 1 ? `/pokemon?page=${currentPage - 1}` : "#"}
+                aria-disabled={currentPage === 1}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+              />
+              </PaginationItem>
+
+            {getPaginationRange(currentPage, totalPages).map((page, index) => (
+              <PaginationItem key={index}>
+                {page === "ellipsis" ? (
+                  <PaginationEllipsis />
+                ) : (
+                  <PaginationLink
+                    href={`/pokemon?page=${page}`}
+                    isActive={page === currentPage}
+                  >
+                    {page}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+
             <PaginationItem>
-              <PaginationLink href={`/pokemon?page=${currentPage - 2}`}>{currentPage - 2}</PaginationLink>
-            </PaginationItem>
-            }
-            {currentPage - 1 > 0 &&
-            <PaginationItem>
-              <PaginationLink href={`/pokemon?page=${currentPage - 1}`}>{currentPage - 1}</PaginationLink>
-            </PaginationItem>
-            }
-            <PaginationItem>
-              <PaginationLink href={`/pokemon?page=${currentPage}`}>{currentPage}</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href={`/pokemon?page=${currentPage + 1}`}>{currentPage + 1}</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href={`/pokemon?page=${currentPage + 2}`}>{currentPage + 2}</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis/>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href={`/pokemon?page=${currentPage + 1}`}/>
+              <PaginationNext 
+                href={currentPage < totalPages ? `/pokemon?page=${currentPage + 1}` : "#"}
+                aria-disabled={currentPage === totalPages}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}  
+              />
             </PaginationItem>
           </PaginationContent>
         </Pagination>
     </div>
   )
   }
+
+
+
+

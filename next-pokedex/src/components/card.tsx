@@ -11,7 +11,7 @@ export default async function PokemonCard({ pokemon }: {pokemon: ProcessedPokemo
                 <Link href="/pokemon/params.id">
                 <CardContent>
                     <Image src={pokemon.imageUrl} alt="ポケモン画像" width="300" height="300"/>
-                    <p>{String(pokemon.id).padStart(3, "0")}</p>
+                    <p>No.{String(pokemon.id).padStart(3, "0")}</p>
                     <h2>{pokemon.japaneseName}</h2>
                 </CardContent>
                 </Link>
