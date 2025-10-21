@@ -29,6 +29,16 @@ import {
             <PaginationItem>
               <PaginationPrevious href={`/pokemon?page=${currentPage - 1}`} />
             </PaginationItem>
+            {currentPage - 2 > 0 &&
+            <PaginationItem>
+              <PaginationLink href={`/pokemon?page=${currentPage - 2}`}>{currentPage - 2}</PaginationLink>
+            </PaginationItem>
+            }
+            {currentPage - 1 > 0 &&
+            <PaginationItem>
+              <PaginationLink href={`/pokemon?page=${currentPage - 1}`}>{currentPage - 1}</PaginationLink>
+            </PaginationItem>
+            }
             <PaginationItem>
               <PaginationLink href={`/pokemon?page=${currentPage}`}>{currentPage}</PaginationLink>
             </PaginationItem>
