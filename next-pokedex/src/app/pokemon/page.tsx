@@ -1,5 +1,4 @@
 import PokemonCard from '@/components/card';
-import { getTotalPokemonCount } from '@/lib/pokeapi'
 import { getProcessdePokemonList } from '@/lib/pokeapi'
 import { getPaginationRange } from '@/lib/pagination'
 import React from 'react'
@@ -13,10 +12,14 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 
+//import { getTotalPokemonCount } from '@/lib/pokeapi'
+
   export default async function PokemonListContetnt({ searchParams}: { searchParams: {page: string}}) {
     const currentPage = Number(searchParams.page) || 1;
     const pokemons = await getProcessdePokemonList(currentPage);
-    const totalCount = await getTotalPokemonCount();
+    //const totalCount = await getTotalPokemonCount();　fetchで取るのが上手くいかないので、今回は定数で決めてしまう
+    //const totalPages = Math.ceil(totalCount / 20);
+    const totalCount = 1020;
     const totalPages = Math.ceil(totalCount / 20);
 
   return (
