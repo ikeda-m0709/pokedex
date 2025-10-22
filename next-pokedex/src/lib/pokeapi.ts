@@ -79,7 +79,7 @@ export async function getProcessdePokemonList(page: number): Promise<ProcessedPo
 
 //総ポケモン数の取得
 export async function getTotalPokemonCount(): Promise<number> {
-    const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1");
+    const res = await fetch("https://pokeapi.co/api/v2/pokemon-species/?limit=0");
     if(!res.ok) return 0;
     const data = await res.json();
     return data.count; //⇐総ポケモン数

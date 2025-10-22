@@ -12,15 +12,15 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 
-//import { getTotalPokemonCount } from '@/lib/pokeapi'
+import { getTotalPokemonCount } from '@/lib/pokeapi'
 
   export default async function PokemonListContetnt({ searchParams}: { searchParams: {page: string}}) {
     const currentPage = Number(searchParams.page) || 1;
     const pokemons = await getProcessdePokemonList(currentPage);
-    //const totalCount = await getTotalPokemonCount();　fetchで取るのが上手くいかないので、今回は定数で決めてしまう
-    //const totalPages = Math.ceil(totalCount / 20);
-    const totalCount = 1020;
+    const totalCount = await getTotalPokemonCount();
     const totalPages = Math.ceil(totalCount / 20);
+    //const totalCount = 1020; fetchで取るのが上手くいかなかった時の定数Ver
+    //const totalPages = Math.ceil(totalCount / 20);
 
   return (
     <div>
