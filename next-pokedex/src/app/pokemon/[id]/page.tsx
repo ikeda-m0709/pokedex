@@ -6,7 +6,8 @@ import { buttonVariants } from "@/components/ui/button"
 
 export default async function PokemonPage({ params }: { params: { id: string }}) {
     const pokemon = await fetchPokemon({params});
-    const currentId = Number(params.id);
+    const resolvedId = await params.id;
+    const currentId = Number(resolvedId);
 
     const prevId = currentId > 1 ? currentId - 1 : null;
     const nextId = currentId + 1;

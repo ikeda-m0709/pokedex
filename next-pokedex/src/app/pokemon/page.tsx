@@ -14,14 +14,15 @@ import {
 
 import { getTotalPokemonCount } from '@/lib/pokeapi'
 
-  export default async function PokemonListContetnt({ searchParams}: { searchParams: {page: string}}) {
-    const currentPage = Number(searchParams.page) || 1;
-    const pokemons = await getProcessdePokemonList(currentPage);
+  export default async function PokemonListContetnt({ searchParams}: { searchParams: {page?: string}}) {
+    //const currentPage = Number(searchParams?.page) || こちらだとawaitして、というエラーが出る
+    const resolvedParams = await searchParams;
+    const currentPage = Number(resolvedParams.page) || 1;
+    const pokemons = await getProcessdePokemonList(currentPage);//現在のページ番号のポケモンたちを取得
     const totalCount = await getTotalPokemonCount();
     const totalPages = Math.ceil(totalCount / 20);
-    //const totalCount = 1020; fetchで取るのが上手くいかなかった時の定数Ver
-    //const totalPages = Math.ceil(totalCount / 20);
 
+console.log(pokemons);
   return (
     <div>
         <h1>ポケモン図鑑</h1>

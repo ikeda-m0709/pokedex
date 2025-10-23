@@ -59,22 +59,28 @@ export async function fetchPokemon({ params }: { params: { id: string }}): Promi
 //一覧ページの取得
 export async function getProcessdePokemonList(page: number): Promise<ProcessedPokemon[]> {
     const limit = 20;
-    const offset = (page - 1) * 20;
+    const offset = (page - 1) * 20;//対象のページに本当は何匹いたとしても、20匹取ってこようとする処理
     
     //PokeAPIからの一覧取得
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
-    if(!res) return notFound();
+    if(!res) return notFound(); 
     const data = await res.json();
     const results = data.results as NamedApiResource[];
 
     //個別ポケモンデータの取得
     const pokemons = await Promise.all(
         results.map(async (pokemon) => {
-            const id = pokemon.url.split("/").filter(Boolean).pop();
-            return await fetchPokemon({params: {id: id!}});
+            //return await fetchPokemon({ params: { id: id! } });だけにすると、最終ページは5匹しかいないのに、20匹分の.mapを実行するため、undefined な ID を渡してエラーになる
+            const id = pokemon.url.split("/").filter(Boolean).pop();//.split("/")でURLを/ごとに分割、.filter(Boolean)で空白を削除、.pop()で末尾のID取得
+            try {
+                return await fetchPokemon({ params: { id: id! } });
+            } catch {
+                return null; // 取得失敗時は null を返す
+            }
         })
     );
-    return pokemons;
+    //return await fetchPokemon({params: {id: id!}});だとnullの場合が想定されてないから×、下記でnullを排除した配列を新たに返す
+    return pokemons.filter(p => p !== null);
 }
 
 //総ポケモン数の取得
