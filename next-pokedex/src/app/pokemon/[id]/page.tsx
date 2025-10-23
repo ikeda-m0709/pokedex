@@ -1,20 +1,21 @@
 import PokemonCardDetail from "@/components/cardDetail";
 import { fetchPokemon } from "@/lib/pokeapi"
+import { getTotalPokemonCount } from "@/lib/pokeapi"
 import Link from 'next/link';
 import { buttonVariants } from "@/components/ui/button"
-
 
 export default async function PokemonPage({ params }: { params: { id: string }}) {
     const pokemon = await fetchPokemon({params});
     const resolvedId = await params.id;
     const currentId = Number(resolvedId);
+    const totalCount = await getTotalPokemonCount(); 
 
     const prevId = currentId > 1 ? currentId - 1 : null;
-    const nextId = currentId + 1;
+    const nextId = currentId < totalCount ? currentId + 1 : null;
 
     const [prevPokemon, nextPokemon] = await Promise.all([
         prevId ? fetchPokemon({ params: { id: String(prevId) }}) : null,
-        fetchPokemon({ params: {id: String(nextId)}})
+        nextId ? fetchPokemon({ params: { id: String(nextId) }}) : null,
     ]);
 
     return (
