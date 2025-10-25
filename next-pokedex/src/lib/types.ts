@@ -52,6 +52,7 @@ export interface Pokemon {
 
 ///pokemon-species/{id} のレスポンス型（分類・日本語名など）
 export interface PokemonSpeciesDetail {
+  id: number;
   genera: {
     genus: string;
     language: {
