@@ -20,7 +20,11 @@ export function SearchForm({ initialQuery = "" }: SearchFormProps) {
         setErrorMessage("!「カタカナ」または「ひらがな」で入力してください");
         return ;
     }
-    router.push(`/search?q=${cleanedQuery}`);
+    const katakanaQuery = cleanedQuery.replace(/[\u3041-\u3096]/g, (char) => (
+            String.fromCharCode(char.charCodeAt(0) + 0x60)
+        )) //ポケモンの日本語名はカタカナのため、ひらがなでの入力をカタカナに変換する
+
+    router.push(`/search?q=${katakanaQuery}`);
    }
 
     return (
