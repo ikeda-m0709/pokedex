@@ -1,11 +1,12 @@
 import { getTotalPokemonCount, fetchPokemon } from '@/lib/pokeapi';
 import { NamedApiResource, PokemonSpeciesDetail, ProcessedPokemon } from '@/lib/types';
 import PokemonCard from './card';
+import { Suspense } from 'react';
+import { Loading } from './loadhing';
 
 interface Props {
     query: string;
 }
-
 
 export async function SearchResult ({ query }: Props) {
     const totalCount = await getTotalPokemonCount();//ポケモンの総件数を取得
@@ -41,19 +42,21 @@ export async function SearchResult ({ query }: Props) {
 
     return (
         <div>
-            {matchedProcessedPokemons.length > 0 ? 
-                <div>
-                    <p>{query}の検索結果:{matchedProcessedPokemons.length}件見つかりました</p>
-                    {matchedProcessedPokemons.map((pokemon:ProcessedPokemon) => (
-                        <PokemonCard key={pokemon.id} pokemon={pokemon} />
-                    ))}
-                </div>
-                :
-                <div>
-                    <p>{query}に一致するポケモンが見つかりませんでした</p>
-                    <p>別のキーワードで検索してください</p>
-                </div>
-            }
+            <Suspense fallback={<Loading />}>
+                {matchedProcessedPokemons.length > 0 ? 
+                    <div>
+                        <p>{query}の検索結果:{matchedProcessedPokemons.length}件見つかりました</p>
+                        {matchedProcessedPokemons.map((pokemon:ProcessedPokemon) => (
+                            <PokemonCard key={pokemon.id} pokemon={pokemon} />
+                        ))}
+                    </div>
+                    :
+                    <div>
+                        <p>{query}に一致するポケモンが見つかりませんでした</p>
+                        <p>別のキーワードで検索してください</p>
+                    </div>
+                }
+            </Suspense>
         </div>
     )
 }
