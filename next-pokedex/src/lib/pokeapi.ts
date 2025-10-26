@@ -90,3 +90,20 @@ export async function getTotalPokemonCount(): Promise<number> {
     const data = await res.json();
     return data.count; //⇐総ポケモン数
 }
+
+//進化関係の情報の取得
+export async function getEvolution({ params }: { params: { id: string }}) {
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${params.id}`);
+    if(!res.ok) return notFound();
+    const data = await res.json();
+    const evolutionURL = data.evolution_chain.url; //⇐で指定されたURLにアクセスすると、進化の詳細が取得できる（例：https://pokeapi.co/api/v2/evolution-chain/1/）※ポケモンのIDと進化チェーンのIDは一致しないので注意（いきなりこのURLのidを変えれば良い、わけではない）
+
+    const evolRes = await fetch(evolutionURL);
+    if(!res.ok) return notFound();
+    const evolData = await evolRes.json();
+    
+    
+    console.log(evolData);
+
+
+}
