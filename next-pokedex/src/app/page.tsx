@@ -9,7 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 
-import {SearchResult} from "@/components/search-result"
 
 export default function Home() {
   return (
@@ -42,7 +41,6 @@ export default function Home() {
       <footer>
         <p>このアプリは<a href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer">PokéAPI</a>を使用しています</p>
       </footer>
-      <SearchResult />
     </div>
   );
 }
