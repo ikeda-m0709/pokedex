@@ -2,108 +2,137 @@
 //ここからそれぞれのページやコンポーネントにインポートすること
 
 import { notFound } from 'next/navigation';
-import { PokemonType, ProcessedPokemon, PokemonSpeciesDetail, ProcessedAbility, PokemonAbility, EffectEntry, NamedApiResource } from './types';
+import { PokemonType, 
+    ProcessedPokemon,
+    Pokemon, 
+    PokemonSpeciesDetail, 
+    ProcessedAbility, 
+    PokemonAbility, 
+    EffectEntry, 
+    NamedApiResource 
+} from './types';
 
-//ポケモンのデータ取得（日本語含む）
-export async function fetchPokemon({ params }: { params: { id: string }}): Promise<ProcessedPokemon> {
-   //言語に依らないデータ取得
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${params.id}`);
-    if(!res.ok) return notFound();
+const BASE_URL = 'https://pokeapi.co/api/v2'; //APIからの取得URLの共通部分
+
+////基本API取得関数の一覧（生データ取得）////
+
+//ポケモン一覧取得
+export async function fetchPokemonList(limit = 20, offset = 0): Promise<NamedApiResource[]> {
+    const res = await fetch(`${BASE_URL}/pokemon?limit=${limit}&offset=${offset}`);
+    if(!res) return notFound(); //取得失敗時はreturn []　で空配列を返した方が良いの？
     const data = await res.json();
+    const results = data.results as NamedApiResource[];
+    return results;
+}
 
-    //日本語データ取得
-    const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${params.id}`);
-    if(!speciesRes.ok) return notFound();
-    const speciesDate: PokemonSpeciesDetail = await speciesRes.json();
+//ポケモン詳細情報取得（※言語に依らない）
+export async function fetchRawPokemon(id: string): Promise<Pokemon | null> {
+    const res = await fetch(`${BASE_URL}/pokemon/${id}`);
+    if(!res.ok) return null; //取得失敗時はnotFound()を返すと関数の戻り値としては型が合わないことがあるため、代わりに return null にして、呼び出し元で if (!data) return notFound() のように処理する方が自然
+    const data = await res.json();
+    return data;
+}
 
-    const japaneseName = speciesDate.names.find(n => n.language.name === "ja")?.name ?? data.name;
-    const genus = speciesDate.genera.find(g => g.language.name === "ja")?.genus ?? "分類なし";
+//「日本語名・分類・進化URL」の取得
+export async function fetchSpecies(id: string): Promise<PokemonSpeciesDetail> {
+    const res = await fetch(`${BASE_URL}/pokemon-species/${id}`);
+    if(!res.ok) return notFound(); //取得失敗時はreturn nullの方が良いの？
+    const data = await res.json();
+    return data;
+}
 
-    //1ポケモンのうち、複数のabilityがあるので、型も配列になる
-    const abilities: ProcessedAbility[] = await Promise.all(
-        data.abilities.map(async (a: PokemonAbility) => {
-            const abilityRes = await fetch(a.ability.url);
-            const abilityData = await abilityRes.json();
-            const japaneseAbilityName = abilityData.names.find((n: { name:string; language: { name: string }}) => n.language.name === "ja")?.name ?? a.ability.name;
-            const effect = abilityData.effect_entries.find((e: EffectEntry) => e.language.name === "ja")?.effect ?? "説明なし";
-            return {
-                name: japaneseAbilityName,
-                effect,
-            };
-        })
+//「アビリティ詳細（日本語名・効果）」の取得
+export async function fetchAbilityDetail(url: string): Promise<ProcessedAbility> {
+    const res = await fetch(url); //ポケモン1匹分の.ability.urlが入る
+    const data = await res.json();
+    const name = data.names.find((n: { name:string; language: { name: string }}) => n.language.name === "ja")?.name ?? data.ability.name;//data.nameでも良いの？
+    const effect = data.effect_entries.find((e: EffectEntry) => e.language.name === "ja")?.effect ?? "説明なし";
+    return { name, effect}
+}
+
+//「タイプ詳細（日本語）」の取得
+export async function fetchTypeName(url: string): Promise<string> {
+    const res = await fetch(url);//ポケモン1匹分の.type.urlが入る
+    const data = await res.json();
+    const type = data.names.find((n: { name: string; language: { name: string}}) => n.language.name === "ja")?.name ?? data.type.name;//data.nameでも良いの？
+    return type;
+}
+
+
+
+////加工済みポケモン情報の取得（1匹）////
+export async function fetchPokemon(id: string): Promise<ProcessedPokemon> {
+   //ポケモン詳細情報、「日本語名・分類・進化URL」の取得の関数使用
+    const raw = await fetchRawPokemon(id);
+    const species = await fetchSpecies(id);
+    if(!raw || !species) return notFound(); //この条件の書き方で良いの？
+
+    //日本語データの取得
+    const japaneseName = species.names.find(n => n.language.name === "ja")?.name ?? raw.name;
+    const genus = species.genera.find(g => g.language.name === "ja")?.genus ?? "分類なし";
+
+    //アビリティの取得
+    const abilities = await Promise.all(
+        raw.abilities.map(async (a: PokemonAbility) => fetchAbilityDetail(a.ability.url))
     );
 
-    //typesの日本語取得
-    const types: string[] = await Promise.all(
-        data.types.map( async (t: PokemonType) => {
-            const typeRes = await fetch(t.type.url);
-            const typeData = await typeRes.json();
-            const japaneseTypeNames = typeData.names.find((n: { name: string; language: { name: string}}) => n.language.name === "ja")?.name ?? t.type.name;
-            return japaneseTypeNames;
-        })
+    //「タイプ詳細（日本語）」の取得の関数使用
+    const types = await Promise.all(
+        raw.types.map( async (t: PokemonType) => fetchTypeName(t.type.url))
     );
 
     return {
-        id: data.id,
-        name: data.name,
+        id: raw.id,
+        name: raw.name,
         japaneseName,
-        imageUrl: data.sprites.other['official-artwork'].front_default ?? data.sprites.front_default,
+        imageUrl: raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default, //.other?.['official-artwork']?の部分をOptional chaining（?.）にしないと、sprites.other や sprites.other['official-artwork'] は 存在しない可能性がある ＝ undefined になる可能性がある、とエラーが出てしまう
         types,
-        height: data.height / 10,
-        weight: data.weight / 10,
+        height: raw.height / 10,
+        weight: raw.weight / 10,
         genus,
         abilities
-    };
+    };//A ?? B は、AがnullまたはundefinedならBを使う、の意味
 }
 
-//一覧ページの取得
+////加工済みポケモン一覧取得（ページ単位）////
 export async function getProcessdePokemonList(page: number): Promise<ProcessedPokemon[]> {
     const limit = 20;
-    const offset = (page - 1) * 20;//対象のページに本当は何匹いたとしても、20匹取ってこようとする処理
+    const offset = (page - 1) * limit;//対象のページに本当は何匹いたとしても、20匹取ってこようとする処理
     
     //PokeAPIからの一覧取得
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
-    if(!res) return notFound(); 
-    const data = await res.json();
-    const results = data.results as NamedApiResource[];
+   const results = await fetchPokemonList(limit, offset);
 
     //個別ポケモンデータの取得
     const pokemons = await Promise.all(
         results.map(async (pokemon) => {
-            //return await fetchPokemon({ params: { id: id! } });だけにすると、最終ページは5匹しかいないのに、20匹分の.mapを実行するため、undefined な ID を渡してエラーになる
+            //return await fetchPokemon(id);だけにすると、最終ページは5匹しかいないのに、20匹分の.mapを実行するため、undefined な ID を渡してエラーになる
             const id = pokemon.url.split("/").filter(Boolean).pop();//.split("/")でURLを/ごとに分割、.filter(Boolean)で空白を削除、.pop()で末尾のID取得
             try {
-                return await fetchPokemon({ params: { id: id! } });
+                return await fetchPokemon(id!);
             } catch {
                 return null; // 取得失敗時は null を返す
             }
         })
     );
-    //return await fetchPokemon({params: {id: id!}});だとnullの場合が想定されてないから×、下記でnullを排除した配列を新たに返す
+    //return await fetchPokemon(id!);だとnullの場合が想定されてないから×、下記でnullを排除した配列を新たに返す
     return pokemons.filter(p => p !== null);
 }
 
-//総ポケモン数の取得
+////総ポケモン数の取得////
 export async function getTotalPokemonCount(): Promise<number> {
-    const res = await fetch("https://pokeapi.co/api/v2/pokemon-species/?limit=0");
+    const res = await fetch("${BASE_URL}/pokemon-species/?limit=0");
     if(!res.ok) return 0;
     const data = await res.json();
     return data.count; //⇐総ポケモン数
 }
 
 //進化関係の情報の取得
-export async function getEvolution({ params }: { params: { id: string }}) {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${params.id}`);
-    if(!res.ok) return notFound();
-    const data = await res.json();
-    const evolutionURL = data.evolution_chain.url; //⇐で指定されたURLにアクセスすると、進化の詳細が取得できる（例：https://pokeapi.co/api/v2/evolution-chain/1/）※ポケモンのIDと進化チェーンのIDは一致しないので注意（いきなりこのURLのidを変えれば良い、わけではない）
-
+export async function getEvolution(id: string) {
+    const species = await fetchSpecies(id);
+    if(!species) return notFound();
+    const evolutionURL = species.evolution_chain.url; //⇐で指定されたURLにアクセスすると、進化の詳細が取得できる（例：https://pokeapi.co/api/v2/evolution-chain/1/）※ポケモンのIDと進化チェーンのIDは一致しないので注意（いきなりこのURLのidを変えれば良い、わけではない）
     const evolRes = await fetch(evolutionURL);
-    if(!res.ok) return notFound();
+    if(!evolRes.ok) return notFound();
     const evolData = await evolRes.json();
-    
-    
-    console.log(evolData);
-
-
+    return evolData;
 }

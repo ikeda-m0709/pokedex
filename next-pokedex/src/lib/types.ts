@@ -65,6 +65,9 @@ export interface PokemonSpeciesDetail {
       name: string;
     };
   }[];
+  evolution_chain:{
+      url: string
+    };
 }
 
 //特性情報（名前と効果）
