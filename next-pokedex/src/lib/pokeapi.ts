@@ -34,9 +34,9 @@ export async function fetchRawPokemon(id: string): Promise<Pokemon | null> {
 }
 
 //「日本語名・分類・進化URL」の取得
-export async function fetchSpecies(id: string): Promise<PokemonSpeciesDetail> {
+export async function fetchSpecies(id: string): Promise<PokemonSpeciesDetail | null> {
     const res = await fetch(`${BASE_URL}/pokemon-species/${id}`);
-    if(!res.ok) return notFound(); //取得失敗時はreturn nullの方が良いの？
+    if(!res.ok) return null; //取得失敗時はnotFound()を返すと関数の戻り値としては型が合わないことがあるため、代わりに return null にして、呼び出し元で if (!data) return notFound() のように処理する方が自然
     const data = await res.json();
     return data;
 }
