@@ -8,8 +8,11 @@ import {
 } from "@/components/ui/card"
 import { Suspense } from 'react'
 import { Loading } from './loading';
+import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button'
 
-export default async function PokemonCardDetail({ pokemon }: {pokemon: ProcessedPokemon}) {
+
+export default async function PokemonDetail({ pokemon }: {pokemon: ProcessedPokemon}) {
 
     return (
         <Suspense fallback={<Loading />}>
@@ -41,6 +44,11 @@ export default async function PokemonCardDetail({ pokemon }: {pokemon: Processed
                                     <li>{ability.effect}</li>
                                 </ul>
                             ))}
+                        </div>
+                        <div>
+                            <h3>進化系統</h3>
+                            <Link className={buttonVariants({ variant: "outline", size:"icon-custom" })} href={`/evolution/${pokemon.id}`}>進化系統ページへ</Link>
+
                         </div>
                     </CardContent>
                 </main>

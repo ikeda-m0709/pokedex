@@ -27,6 +27,7 @@ const buttonVariants = cva(
         icon: "size-9",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
+        "icon-custom": "h-10 rounded-md px-30 has-[>svg]:px-4", //ポケモン詳細ページ内の「進化系統ページへ」のpadding設定
       },
     },
     defaultVariants: {
