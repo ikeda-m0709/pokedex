@@ -113,3 +113,41 @@ export interface PaginationInfo {
   hasPrev: boolean;
   totalCount: number;
 }
+
+////進化条件関係の型////
+//pokemon-speciesから取得した進化チェーンの詳細を取得時
+export interface EvolutionChain {
+  id: number;
+  baby_trigger_item: NamedApiResource | null;
+  chain: ChainLink;
+};
+
+//進化チェーンの中のchainの中身の取得時
+export interface ChainLink {
+  is_baby: boolean; //ベイビィポケモンかどうか
+  species: NamedApiResource; //この進化段階におけるポケモン種
+  evolution_details: EvolutionDetail[] | null; //このポケモンの進化条件
+  evolves_to: ChainLink[]; //次の進化先ポケモンのリスト
+};
+
+//evolution_detailsの中身の取得時
+export interface EvolutionDetail {
+  item: NamedApiResource | null; //進化に必要なアイテム（雷の石）
+  trigger: NamedApiResource; //進化のきっかけ（レベルアップ、通信交換）
+  gender: number | null; //進化するポケモンの性別（不明、オス、メス）
+  held_item: NamedApiResource | null; //進化時に持っている必要があるアイテム
+  known_move: NamedApiResource | null; //覚えている必要がある技名
+  known_move_type: NamedApiResource | null; //覚えている技のtype
+  location: NamedApiResource | null; //特定の場所での進化（雪原）
+  min_level: number | null; //進化の最低レベル
+  min_happiness: number | null; //最低なつき度
+  min_beauty: number | null; //最低美しさ（コンテストステータス）
+  min_affection: number | null; //最低なかよし度
+  needs_overworld_rain: boolean; //フィールドの雨の有無
+  party_species: NamedApiResource | null; //手持ちに特定のポケモンが必要
+  party_type: NamedApiResource | null; //手持ちに特定タイプのポケモンが必要
+  relative_physical_stats: -1 | 0 | 1 | null; //攻撃と防御の比較（1:攻撃>防御, 0:同じ, -1:攻撃<防御）
+  time_of_day: 'day' | 'night' | ''; //時間帯
+  trade_species: NamedApiResource | null; //特定のポケモンと交換が必要
+  turn_upside_down: boolean; //3DSを逆さにする必要がある（マーイーカの進化）
+};

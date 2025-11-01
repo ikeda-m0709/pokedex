@@ -9,7 +9,9 @@ import { PokemonType,
     ProcessedAbility, 
     PokemonAbility, 
     EffectEntry, 
-    NamedApiResource 
+    NamedApiResource,
+    EvolutionChain,
+    ChainLink 
 } from './types';
 
 const BASE_URL = 'https://pokeapi.co/api/v2'; //APIからの取得URLの共通部分
@@ -41,22 +43,23 @@ export async function fetchSpecies(id: string): Promise<PokemonSpeciesDetail | n
     return data;
 }
 
+//日本語データ取得（※NamedApiResource（nameとurlを持つ）を渡すと、そのリソースの日本語名を返す）
+export async function fetchJapaneseName(resource: NamedApiResource): Promise<string> {
+    const res = await fetch(resource.url); //ポケモン1匹分の.〇〇〇.urlが入る
+    if (!res.ok) return resource.name; //受け取れなかったときは英語表記を返す
+    const data = await res.json();
+    const name = data.names.find((n: { name:string; language: { name: string }}) => n.language.name === "ja-Hrkt")?.name;
+    return name;
+}
+
 //「アビリティ詳細（日本語名・効果）」の取得
 export async function fetchAbilityDetail(url: string): Promise<ProcessedAbility> {
     const res = await fetch(url); //ポケモン1匹分の.ability.urlが入る
+    if(!res.ok) return { name: "不明", effect: "取得失敗" };
     const data = await res.json();
-    console.log("fetchAbilityDetail response:", data);
-    const name = data.names.find((n: { name:string; language: { name: string }}) => n.language.name === "ja-Hrkt")?.name ?? data.ability.name;//data.nameでも良いの？
+    const name = await fetchJapaneseName({ name :data.name, url });//NamedApiResource型に合わせた表記にする
     const effect = data.effect_entries.find((e: EffectEntry) => e.language.name === "ja-Hrkt")?.effect ?? "説明なし";
     return { name, effect}
-}
-
-//「タイプ詳細（日本語）」の取得
-export async function fetchTypeName(url: string): Promise<string> {
-    const res = await fetch(url);//ポケモン1匹分の.type.urlが入る
-    const data = await res.json();
-    const type = data.names.find((n: { name: string; language: { name: string}}) => n.language.name === "ja-Hrkt")?.name ?? data.type.name;//data.nameでも良いの？
-    return type;
 }
 
 
@@ -66,20 +69,20 @@ export async function fetchPokemon(id: string): Promise<ProcessedPokemon> {
    //ポケモン詳細情報、「日本語名・分類・進化URL」の取得の関数使用
     const raw = await fetchRawPokemon(id);
     const species = await fetchSpecies(id);
-    if(!raw || !species) return notFound(); //この条件の書き方で良いの？
+    if(!raw || !species) return notFound();
 
     //日本語データの取得
     const japaneseName = species.names.find(n => n.language.name === "ja-Hrkt")?.name ?? raw.name;
     const genus = species.genera.find(g => g.language.name === "ja-Hrkt")?.genus ?? "分類なし";
 
-    //アビリティの取得
+    //「アビリティ詳細（日本語名・効果）」の取得
     const abilities = await Promise.all(
         raw.abilities.map(async (a: PokemonAbility) => fetchAbilityDetail(a.ability.url))
     );
 
-    //「タイプ詳細（日本語）」の取得の関数使用
+    //日本語データ取得の関数に「タイプ詳細」を渡す
     const types = await Promise.all(
-        raw.types.map( async (t: PokemonType) => fetchTypeName(t.type.url))
+        raw.types.map( async (t: PokemonType) => fetchJapaneseName(t.type))
     );
 
     return {
@@ -128,12 +131,16 @@ export async function getTotalPokemonCount(): Promise<number> {
 }
 
 //進化関係の情報の取得
-export async function getEvolution(id: string) {
+export async function getEvolution(id: string): Promise<EvolutionChain | null> {
+    //pokemon-speciesから進化チェーンの詳細を取得
     const species = await fetchSpecies(id);
-    if(!species) return notFound();
+    if(!species) return null;
     const evolutionURL = species.evolution_chain.url; //⇐で指定されたURLにアクセスすると、進化の詳細が取得できる（例：https://pokeapi.co/api/v2/evolution-chain/1/）※ポケモンのIDと進化チェーンのIDは一致しないので注意（いきなりこのURLのidを変えれば良い、わけではない）
     const evolRes = await fetch(evolutionURL);
-    if(!evolRes.ok) return notFound();
+    if(!evolRes.ok) return null;
     const evolData = await evolRes.json();
     return evolData;
+
+    //evolDataからchainの中身の取得
+    const chain: ChainLink = evolData.chain;
 }
