@@ -10,8 +10,8 @@ import { PokemonType,
     PokemonAbility, 
     EffectEntry, 
     NamedApiResource,
-    EvolutionChain,
-    ChainLink 
+    //EvolutionChain,
+    //ChainLink 
 } from './types';
 
 const BASE_URL = 'https://pokeapi.co/api/v2'; //APIからの取得URLの共通部分
@@ -130,7 +130,7 @@ export async function getTotalPokemonCount(): Promise<number> {
     return data.count; //⇐総ポケモン数
 }
 
-//進化関係の情報の取得
+/*//進化関係の情報の取得
 export async function getEvolution(id: string): Promise<EvolutionChain | null> {
     //pokemon-speciesから進化チェーンの詳細を取得
     const species = await fetchSpecies(id);
@@ -143,4 +143,4 @@ export async function getEvolution(id: string): Promise<EvolutionChain | null> {
 
     //evolDataからchainの中身の取得
     const chain: ChainLink = evolData.chain;
-}
+}*/
