@@ -21,10 +21,15 @@ export async function SearchResult ({ query }: Props) {
             return await res.json();//nullが配列に入ってるので、次の下記の処理で排除することから始めないといけない
         })
     )
+
+    //ポケモンの日本語名はカタカナのため、ひらがなでの入力をカタカナに変換する
+    const katakanaQuery = query.replace(/[\u3041-\u3096]/g, (char) => (
+        String.fromCharCode(char.charCodeAt(0) + 0x60)
+    ))
     
     const matchedPokemons = speciesData.filter(d => d !== null) //speciesData(全てのポケモンの各言語情報)の配列からnullを排除する
     .filter(d => d.names.find((d => d.language.name === "ja-Hrkt")) //各言語情報から日本語だけのポケモン情報に絞る
-    ?.name.includes(query)) //全ての日本語情報のポケモンの中に、query(inputの入力値)が含まれているか
+    ?.name.includes(katakanaQuery)) //全ての日本語情報のポケモンの中に、カタカナに変換後のquery(inputの入力値)が含まれているか
     .slice(0, 10); //最大10件に制限
     
     const matchedPokemonsdata = await Promise.all( //PokemonCardコンポーネントに渡すために、型をProcessedPokemonにしたいので、不足しているプロパティを取得する
@@ -52,7 +57,7 @@ export async function SearchResult ({ query }: Props) {
                     </div>
                     :
                     <div>
-                        <p>{query}に一致するポケモンが見つかりませんでした</p>
+                        <p>「{query}」に一致するポケモンが見つかりませんでした</p>
                         <p>別のキーワードで検索してください</p>
                     </div>
                 }

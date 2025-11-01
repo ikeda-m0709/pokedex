@@ -21,15 +21,17 @@ export default async function Search ({searchParams}: Props) {
     <div>
         <h1>ポケモン検索</h1>
         <p>ポケモンの名前で検索できます（カタカナ・ひらがな）</p>
-        <Suspense fallback={<Loading />}>
+        
           <div>
             <SearchForm />
             {!query ? /*検索するとここに結果の画像やみつかりませんでしたの文言が表示される*/
               <p>上の検索フォームにポケモンの名前を入力してください</p> :
-                <SearchResult query={query} /> 
+                <Suspense fallback={<Loading message = "検索中……"/>}>
+                  <SearchResult query={query} />
+                </Suspense> 
             }
           </div>
-        </Suspense>
+        
     </div>
   )
 }
