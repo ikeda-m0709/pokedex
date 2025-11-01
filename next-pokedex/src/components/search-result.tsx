@@ -23,7 +23,7 @@ export async function SearchResult ({ query }: Props) {
     )
     
     const matchedPokemons = speciesData.filter(d => d !== null) //speciesData(全てのポケモンの各言語情報)の配列からnullを排除する
-    .filter(d => d.names.find((d => d.language.name === "ja")) //各言語情報から日本語だけのポケモン情報に絞る
+    .filter(d => d.names.find((d => d.language.name === "ja-Hrkt")) //各言語情報から日本語だけのポケモン情報に絞る
     ?.name.includes(query)) //全ての日本語情報のポケモンの中に、query(inputの入力値)が含まれているか
     .slice(0, 10); //最大10件に制限
     
@@ -31,7 +31,7 @@ export async function SearchResult ({ query }: Props) {
         matchedPokemons.map(async p => {
             const id = String(p.id);
             try {
-                return await fetchPokemon( { params: { id }});
+                return await fetchPokemon(id);
             } catch {
                 return null;
             }
