@@ -45,8 +45,9 @@ export async function fetchSpecies(id: string): Promise<PokemonSpeciesDetail | n
 export async function fetchAbilityDetail(url: string): Promise<ProcessedAbility> {
     const res = await fetch(url); //ポケモン1匹分の.ability.urlが入る
     const data = await res.json();
-    const name = data.names.find((n: { name:string; language: { name: string }}) => n.language.name === "ja")?.name ?? data.ability.name;//data.nameでも良いの？
-    const effect = data.effect_entries.find((e: EffectEntry) => e.language.name === "ja")?.effect ?? "説明なし";
+    console.log("fetchAbilityDetail response:", data);
+    const name = data.names.find((n: { name:string; language: { name: string }}) => n.language.name === "ja-Hrkt")?.name ?? data.ability.name;//data.nameでも良いの？
+    const effect = data.effect_entries.find((e: EffectEntry) => e.language.name === "ja-Hrkt")?.effect ?? "説明なし";
     return { name, effect}
 }
 
@@ -54,7 +55,7 @@ export async function fetchAbilityDetail(url: string): Promise<ProcessedAbility>
 export async function fetchTypeName(url: string): Promise<string> {
     const res = await fetch(url);//ポケモン1匹分の.type.urlが入る
     const data = await res.json();
-    const type = data.names.find((n: { name: string; language: { name: string}}) => n.language.name === "ja")?.name ?? data.type.name;//data.nameでも良いの？
+    const type = data.names.find((n: { name: string; language: { name: string}}) => n.language.name === "ja-Hrkt")?.name ?? data.type.name;//data.nameでも良いの？
     return type;
 }
 
@@ -68,8 +69,8 @@ export async function fetchPokemon(id: string): Promise<ProcessedPokemon> {
     if(!raw || !species) return notFound(); //この条件の書き方で良いの？
 
     //日本語データの取得
-    const japaneseName = species.names.find(n => n.language.name === "ja")?.name ?? raw.name;
-    const genus = species.genera.find(g => g.language.name === "ja")?.genus ?? "分類なし";
+    const japaneseName = species.names.find(n => n.language.name === "ja-Hrkt")?.name ?? raw.name;
+    const genus = species.genera.find(g => g.language.name === "ja-Hrkt")?.genus ?? "分類なし";
 
     //アビリティの取得
     const abilities = await Promise.all(
@@ -120,7 +121,7 @@ export async function getProcessdePokemonList(page: number): Promise<ProcessedPo
 
 ////総ポケモン数の取得////
 export async function getTotalPokemonCount(): Promise<number> {
-    const res = await fetch("${BASE_URL}/pokemon-species/?limit=0");
+    const res = await fetch(`${BASE_URL}/pokemon-species/?limit=0`);
     if(!res.ok) return 0;
     const data = await res.json();
     return data.count; //⇐総ポケモン数

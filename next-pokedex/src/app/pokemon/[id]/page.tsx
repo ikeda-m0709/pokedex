@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { buttonVariants } from "@/components/ui/button"
 
 export default async function PokemonPage({ params }: { params: { id: string }}) {
-    const pokemon = await fetchPokemon({params});
+    const pokemon = await fetchPokemon(params.id);
     const resolvedId = await params.id;
     const currentId = Number(resolvedId);
     const totalCount = await getTotalPokemonCount(); 
@@ -14,8 +14,8 @@ export default async function PokemonPage({ params }: { params: { id: string }})
     const nextId = currentId < totalCount ? currentId + 1 : null;
 
     const [prevPokemon, nextPokemon] = await Promise.all([
-        prevId ? fetchPokemon({ params: { id: String(prevId) }}) : null,
-        nextId ? fetchPokemon({ params: { id: String(nextId) }}) : null,
+        prevId ? fetchPokemon(String(prevId)) : null,
+        nextId ? fetchPokemon(String(nextId)) : null,
     ]);
 
     return (

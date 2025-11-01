@@ -1,7 +1,7 @@
 import { SearchForm } from '@/components/search-form'
 import { SearchResult } from '@/components/search-result';
 import React, { Suspense } from 'react'
-import { Loading } from '@/components/loadhing';
+import { Loading } from '@/components/loading';
 
 
 interface SearchParams {

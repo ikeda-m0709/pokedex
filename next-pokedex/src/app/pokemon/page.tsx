@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/pagination"
 
 import { getTotalPokemonCount } from '@/lib/pokeapi'
-import { Loading} from '@/components/loadhing'
+import { Loading} from '@/components/loading'
 
   export default async function PokemonListContetnt({ searchParams}: { searchParams: {page?: string}}) {
     //const currentPage = Number(searchParams?.page) || こちらだとawaitして、というエラーが出る
@@ -21,7 +21,7 @@ import { Loading} from '@/components/loadhing'
     const currentPage = Number(resolvedParams.page) || 1;
     const pokemons = await getProcessdePokemonList(currentPage);//現在のページ番号のポケモンたちを取得
     const totalCount = await getTotalPokemonCount();
-    const totalPages = Math.ceil(totalCount / 20);
+    const totalPages = Math.ceil(totalCount / 20); //（1ページあたり）20で割って、切り上げる（101/20=5余り1なので6になる）
 
 console.log(pokemons);
   return (

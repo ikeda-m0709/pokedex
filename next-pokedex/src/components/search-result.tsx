@@ -2,7 +2,7 @@ import { getTotalPokemonCount, fetchPokemon } from '@/lib/pokeapi';
 import { NamedApiResource, PokemonSpeciesDetail, ProcessedPokemon } from '@/lib/types';
 import PokemonCard from './card';
 import { Suspense } from 'react';
-import { Loading } from './loadhing';
+import { Loading } from './loading';
 
 interface Props {
     query: string;
