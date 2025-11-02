@@ -16,16 +16,16 @@ export default async function EvolutionPage({ params }: { params: { id: string }
         const evolutionList = getEvolutionList(chain);
         const evolutionProfs: (EvolutionProf | null)[] = await Promise.all(
           evolutionList.map(async e => {
-            const raw = await fetchRawPokemon(e.species.name);
+            const raw = await fetchRawPokemon(e.species.name);//${BASE_URL}/pokemon/${id}は${BASE_URL}/pokemon/${name}でも同じ結果
             if(!raw) return null;
     
             const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
             const japaneseName = await fetchJapaneseName(e.species);
     
             return {
+              id:raw.id,
               imageUrl,
               japaneseName,
-              speciesName: e.species.name,//keyにしたいからこれも返す
             };
         })
         );

@@ -132,9 +132,9 @@ export interface ChainLink {
 
 //↑のspeciesから日本語名・画像を取得する
 export interface EvolutionProf {
+  id: number;
   imageUrl: string;
   japaneseName: string;
-  speciesName: string;
 };
 
 //evolution_detailsの中身の取得時

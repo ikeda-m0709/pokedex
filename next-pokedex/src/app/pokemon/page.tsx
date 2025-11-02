@@ -23,7 +23,6 @@ import { Loading} from '@/components/loading'
     const totalCount = await getTotalPokemonCount();
     const totalPages = Math.ceil(totalCount / 20); //（1ページあたり）20で割って、切り上げる（101/20=5余り1なので6になる）
 
-console.log(pokemons);
   return (
     <div>
         <h1>ポケモン図鑑</h1>

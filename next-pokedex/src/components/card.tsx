@@ -1,9 +1,9 @@
 import Image from 'next/image'
-import { ProcessedPokemon } from "@/lib/types"
+import { EvolutionProf } from "@/lib/types"
 import { Card,  CardContent } from "@/components/ui/card"
 import Link from 'next/link'
 
-export default async function PokemonCard({ pokemon }: {pokemon: ProcessedPokemon}) {
+export default async function PokemonCard({ pokemon }: {pokemon: EvolutionProf}) {
     
     return (
         <Card>

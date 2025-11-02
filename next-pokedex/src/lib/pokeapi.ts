@@ -130,7 +130,10 @@ export async function getTotalPokemonCount(): Promise<number> {
     return data.count; //⇐総ポケモン数
 }
 
-//pokemon-speciesから取得した進化チェーンの詳細を取得
+
+
+////進化情報の取得関係の関数まとめ////
+//①pokemon-speciesから取得した進化チェーンの詳細を取得
 export async function getEvolution(id: string): Promise<ChainLink | null> {
     const species = await fetchSpecies(id);
     if(!species) return null;
@@ -144,18 +147,26 @@ export async function getEvolution(id: string): Promise<ChainLink | null> {
     return chain;
 }
 
-
-//進化リストの作成
+//②進化リストの作成
 export function getEvolutionList(chain: ChainLink): ChainLink[] {
     const result: ChainLink[] = [];
-
     let current = chain; //開始時は進化起点のポケモン
-    while(current) { //起点から順にevolves_to[0]（次の進化ポケモン）を追加していき、次がなくなったら（!current)ループ終了
+
+    if(chain.evolves_to.length === 1) {
+        while(current) { //起点から順にevolves_to[0]（次の進化ポケモン）を追加していき、次がなくなったら（!current)ループ終了
+            result.push(current);
+            current = current.evolves_to[0];
+        }
+    } else if(chain.evolves_to.length > 1) {
         result.push(current);
-        current = chain.evolves_to[0];
+        chain.evolves_to.map(t => result.push(t));
+    } else {
+        result.push(current);
     }
     return result;
 }
+
+
 
 
 /*
