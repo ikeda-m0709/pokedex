@@ -125,9 +125,16 @@ export interface EvolutionChain {
 //進化チェーンの中のchainの中身の取得時
 export interface ChainLink {
   is_baby: boolean; //ベイビィポケモンかどうか
-  species: NamedApiResource; //この進化段階におけるポケモン種
+  species: NamedApiResource; //ポケモンの種族名と、その詳細情報を取得できるURL(例・フシギダネ"name": "bulbasaur","url": "https://pokeapi.co/api/v2/pokemon-species/1/")
   evolution_details: EvolutionDetail[] | null; //このポケモンの進化条件
   evolves_to: ChainLink[]; //次の進化先ポケモンのリスト
+};
+
+//↑のspeciesから日本語名・画像を取得する
+export interface EvolutionProf {
+  imageUrl: string;
+  japaneseName: string;
+  speciesName: string;
 };
 
 //evolution_detailsの中身の取得時

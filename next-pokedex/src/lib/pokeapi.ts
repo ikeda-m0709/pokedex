@@ -10,8 +10,8 @@ import { PokemonType,
     PokemonAbility, 
     EffectEntry, 
     NamedApiResource,
-    //EvolutionChain,
-    //ChainLink 
+    EvolutionChain,
+    ChainLink 
 } from './types';
 
 const BASE_URL = 'https://pokeapi.co/api/v2'; //APIからの取得URLの共通部分
@@ -130,17 +130,62 @@ export async function getTotalPokemonCount(): Promise<number> {
     return data.count; //⇐総ポケモン数
 }
 
-/*//進化関係の情報の取得
-export async function getEvolution(id: string): Promise<EvolutionChain | null> {
-    //pokemon-speciesから進化チェーンの詳細を取得
+//pokemon-speciesから取得した進化チェーンの詳細を取得
+export async function getEvolution(id: string): Promise<ChainLink | null> {
     const species = await fetchSpecies(id);
     if(!species) return null;
     const evolutionURL = species.evolution_chain.url; //⇐で指定されたURLにアクセスすると、進化の詳細が取得できる（例：https://pokeapi.co/api/v2/evolution-chain/1/）※ポケモンのIDと進化チェーンのIDは一致しないので注意（いきなりこのURLのidを変えれば良い、わけではない）
     const evolRes = await fetch(evolutionURL);
     if(!evolRes.ok) return null;
-    const evolData = await evolRes.json();
-    return evolData;
+    const evolData = await evolRes.json(); //.json()しないと、型がresponseになる
 
     //evolDataからchainの中身の取得
     const chain: ChainLink = evolData.chain;
-}*/
+    return chain;
+}
+
+
+//進化リストの作成
+export function getEvolutionList(chain: ChainLink): ChainLink[] {
+    const result: ChainLink[] = [];
+
+    let current = chain; //開始時は進化起点のポケモン
+    while(current) { //起点から順にevolves_to[0]（次の進化ポケモン）を追加していき、次がなくなったら（!current)ループ終了
+        result.push(current);
+        current = chain.evolves_to[0];
+    }
+    return result;
+}
+
+
+/*
+//日本語データ取得（※NamedApiResource（nameとurlを持つ）を渡すと、そのリソースの日本語名を返す）
+export async function fetchJapaneseName(resource: NamedApiResource): Promise<string> {
+    const res = await fetch(resource.url); //ポケモン1匹分の.〇〇〇.urlが入る
+    if (!res.ok) return resource.name; //受け取れなかったときは英語表記を返す
+    const data = await res.json();
+    const name = data.names.find((n: { name:string; language: { name: string }}) => n.language.name === "ja-Hrkt")?.name;
+    return name;
+}
+ */
+
+/*
+////進化チェーンの中のchainの中身の取得
+//chain: ChainLink ⇒evolutionChain.chain（※↑のchain）から来た、今見ている進化段階
+//targetName: string ⇒探したいポケモンの名前（詳細ページのポケモン）　例・ピカチュウ
+//path: NamedApiResource[] →今までたどってきた進化経路。初期値は空配列[]
+function findEvolutionPath(chain: ChainLink, targetName: string, path: NamedApiResource[] = []): NamedApiResource[] | null {
+  const newPath = [...path, chain.species];//今のポケモン（進化の起点のポケモン）を経路に追加（name, url）
+
+  if (chain.species.name === targetName) {
+    return newPath;
+  }
+
+  for (const next of chain.evolves_to) {
+    const result = findEvolutionPath(next, targetName, newPath);
+    if (result) return result;
+  }
+
+  return null;
+}
+*/
