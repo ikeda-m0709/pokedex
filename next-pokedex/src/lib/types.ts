@@ -158,3 +158,25 @@ export interface EvolutionDetail {
   trade_species: NamedApiResource | null; //特定のポケモンと交換が必要
   turn_upside_down: boolean; //3DSを逆さにする必要がある（マーイーカの進化）
 };
+
+//↑の日本語名に加工後
+export interface ProcessedEvolutionDetail {
+  item: string | null;
+  trigger: string | null;
+  gender: number | null;
+  held_item: string | null;
+  known_move: string | null;
+  known_move_type: string | null;
+  location: string | null;
+  min_level: number | null;
+  min_happiness: number | null;
+  min_beauty: number | null;
+  min_affection: number | null;
+  needs_overworld_rain: boolean;
+  party_species: string | null;
+  party_type: string | null;
+  relative_physical_stats: -1 | 0 | 1 | null;
+  time_of_day: 'day' | 'night' | '';
+  trade_species: string | null;
+  turn_upside_down: boolean;
+}

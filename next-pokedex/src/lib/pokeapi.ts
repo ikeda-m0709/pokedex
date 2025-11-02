@@ -10,8 +10,8 @@ import { PokemonType,
     PokemonAbility, 
     EffectEntry, 
     NamedApiResource,
-    EvolutionChain,
-    ChainLink 
+    ChainLink ,
+    ProcessedEvolutionDetail
 } from './types';
 
 const BASE_URL = 'https://pokeapi.co/api/v2'; //APIからの取得URLの共通部分
@@ -166,37 +166,36 @@ export function getEvolutionList(chain: ChainLink): ChainLink[] {
     return result;
 }
 
+//↑のchainを元に、進化条件の詳細の取得
+export async function getEvolutionDetails(chain: ChainLink):Promise<ProcessedEvolutionDetail[]> {
+    //chain.evolution_detailsの型はEvolutionDetail[] | nullなので、nullの場合は空配列を返す
+    //また、null→進化条件が存在しない　場合と、　[]（空配列）→進化条件はあるが、要素が0件（イーブイなど分岐進化するものはイーブイ自身の配列は空で、進化先のevolves_to[i].evolution_detailsに記載があるため）
+    if(!chain.evolution_details || chain.evolution_details.length === 0) return []; 
 
+    const details = await Promise.all(
+        chain.evolution_details.map(async d => {
+            return {
+                item: d.item ? await fetchJapaneseName(d.item) : null, //型がitem: NamedApiResource | nullなので、それに合わせて返さないと
+                trigger: d.trigger ? await fetchJapaneseName(d.trigger) : null,
+                gender: d.gender ? d.gender : null,
+                held_item: d.held_item ? await fetchJapaneseName(d.held_item) : null,
+                known_move: d.known_move ? await fetchJapaneseName(d.known_move) : null,
+                known_move_type: d.known_move_type ? await fetchJapaneseName(d.known_move_type) : null,
+                location: d.location ? await fetchJapaneseName(d.location) : null,
+                min_level: d.min_level ? d.min_level : null,
+                min_happiness: d.min_happiness ? d.min_happiness : null,
+                min_beauty: d.min_beauty ? d.min_beauty : null,
+                min_affection: d.min_affection ? d.min_affection :null,
+                needs_overworld_rain: d.needs_overworld_rain,
+                party_species: d.party_species ? await fetchJapaneseName(d.party_species) : null,
+                party_type: d.party_type ? await fetchJapaneseName(d.party_type) : null,
+                relative_physical_stats: d.relative_physical_stats ? d.relative_physical_stats : null,
+                time_of_day: d.time_of_day,
+                trade_species: d.trade_species ? await fetchJapaneseName(d.trade_species) : null,
+                turn_upside_down: (d.turn_upside_down),
+            };
+        })
+    );
 
-
-/*
-//日本語データ取得（※NamedApiResource（nameとurlを持つ）を渡すと、そのリソースの日本語名を返す）
-export async function fetchJapaneseName(resource: NamedApiResource): Promise<string> {
-    const res = await fetch(resource.url); //ポケモン1匹分の.〇〇〇.urlが入る
-    if (!res.ok) return resource.name; //受け取れなかったときは英語表記を返す
-    const data = await res.json();
-    const name = data.names.find((n: { name:string; language: { name: string }}) => n.language.name === "ja-Hrkt")?.name;
-    return name;
+    return details;
 }
- */
-
-/*
-////進化チェーンの中のchainの中身の取得
-//chain: ChainLink ⇒evolutionChain.chain（※↑のchain）から来た、今見ている進化段階
-//targetName: string ⇒探したいポケモンの名前（詳細ページのポケモン）　例・ピカチュウ
-//path: NamedApiResource[] →今までたどってきた進化経路。初期値は空配列[]
-function findEvolutionPath(chain: ChainLink, targetName: string, path: NamedApiResource[] = []): NamedApiResource[] | null {
-  const newPath = [...path, chain.species];//今のポケモン（進化の起点のポケモン）を経路に追加（name, url）
-
-  if (chain.species.name === targetName) {
-    return newPath;
-  }
-
-  for (const next of chain.evolves_to) {
-    const result = findEvolutionPath(next, targetName, newPath);
-    if (result) return result;
-  }
-
-  return null;
-}
-*/
