@@ -1,18 +1,18 @@
 //APIリクエストで利用する型情報をここに記載
 
-// 基本的な名前とURL構造　★まだ未確認
+// 基本的な名前とURL構造
 export interface NamedApiResource {
   name: string;
   url: string;
 }
 
-// 多言語対応の名前　★まだ未確認
+// 多言語対応の名前
 export interface Name {
   name: string;
   language: NamedApiResource;
 }
 
-// ポケモン一覧のレスポンス　★まだ未確認
+// ポケモン一覧のレスポンス
 export interface PokemonListResponse {
   count: number;
   next: string | null;
@@ -105,7 +105,7 @@ export interface ProcessedPokemon {
   abilities: ProcessedAbility[]; //name: static, effect:接触した相手をマヒ状態にすることがある
 }
 
-// ページネーション情報　★まだ未確認
+// ページネーション情報
 export interface PaginationInfo {
   currentPage: number;
   totalPages: number;
@@ -184,6 +184,6 @@ export interface ProcessedEvolutionDetail {
 export interface evolutionStep {
   prof: EvolutionProf; // ポケモンの基本情報（画像・名前・ID）
   details: ProcessedEvolutionDetail[]; // 進化条件
-  isBranching: boolean;  // 分岐進化かどうか（CSS切り替え用）
-  parentIsBranching: boolean;
+  isBranching: boolean;  // 自分の次が分岐進化かどうか（↓の割り出し用）
+  parentIsBranching: boolean;  // 自分の前（親）が分岐進化かどうか（CSS切り替え用）
 }

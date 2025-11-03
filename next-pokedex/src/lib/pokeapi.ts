@@ -1,7 +1,7 @@
 //APIリクエスト関係の関数はここでまとめる
 //ここからそれぞれのページやコンポーネントにインポートすること
-
 import { notFound } from 'next/navigation';
+
 import { PokemonType, 
     ProcessedPokemon,
     Pokemon, 
@@ -158,61 +158,7 @@ export async function getEvolution(id: string): Promise<ChainLink | null> {
     return chain;
 }
 
-//②進化リストの作成
-export function getEvolutionList(chain: ChainLink): ChainLink[] {
-    const result: ChainLink[] = [];
-    let current = chain; //開始時は進化起点のポケモン
-
-    if(chain.evolves_to.length === 1) {
-        while(current) { //起点から順にevolves_to[0]（次の進化ポケモン）を追加していき、次がなくなったら（!current)ループ終了
-            result.push(current);
-            current = current.evolves_to[0];
-        }
-    } else if(chain.evolves_to.length > 1) {
-        result.push(current);
-        chain.evolves_to.map(t => result.push(t));
-    } else {
-        result.push(current);
-    }
-    return result;
-}
-
-//※修正後
-export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionStep[]> {
-    const result: evolutionStep[] = [];
-
-    async function traverse(node: ChainLink, parentBranching: boolean) {
-        const raw = await fetchRawPokemon(node.species.name);
-        if(!raw) return null;
-        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
-        const japaneseName = await fetchJapaneseName(node.species);
-        const details = await getEvolutionDetails(node);
-
-        const isBranching = node.evolves_to.length > 1;
-
-        result.push({
-              prof: {  
-                id: raw.id,
-                imageUrl,
-                japaneseName,
-              },
-              details,
-              isBranching, //現在の進化段階の進化先数
-              parentIsBranching: parentBranching //前（親）の進化段階の進化先数（※CSS用のフラグ）
-            });
-
-        for (const next of node.evolves_to) { //evolves_to に含まれるすべての進化先に対して、再帰的に同じ処理を行う
-            await traverse(next, isBranching); //次の進化段階で前（親）の進化先数として使うために、持って行って再帰する
-        }        
-    }
-
-    await traverse(chain, false); //開始時は前の進化段階（親）が無いため、falseを渡しておく
-    console.log(result);
-    return result;
-    
-}
-
-//↑のchainを元に、進化条件の詳細の取得
+//②↑で取得したchainを元に、進化条件の詳細の取得
 export async function getEvolutionDetails(chain: ChainLink):Promise<ProcessedEvolutionDetail[]> {
     //chain.evolution_detailsの型はEvolutionDetail[] | nullなので、nullの場合は空配列を返す
     //また、null→進化条件が存在しない　場合と、　[]（空配列）→進化条件はあるが、要素が0件（イーブイなど分岐進化するものはイーブイ自身の配列は空で、進化先のevolves_to[i].evolution_detailsに記載があるため）
@@ -246,3 +192,39 @@ export async function getEvolutionDetails(chain: ChainLink):Promise<ProcessedEvo
 
     return details;
 }
+
+//③↑の①で取得したchainと、②の進化条件詳細を使い、進化段階ごとの進化条件情報の網羅版を取得
+export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionStep[]> {
+    const result: evolutionStep[] = [];
+
+    async function traverse(startPokemon: ChainLink, parentBranching: boolean) {
+        const raw = await fetchRawPokemon(startPokemon.species.name);
+        if(!raw) return null;
+        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+        const japaneseName = await fetchJapaneseName(startPokemon.species);
+        const details = await getEvolutionDetails(startPokemon);
+
+        const isBranching = startPokemon.evolves_to.length > 1;
+
+        result.push({
+              prof: {  
+                id: raw.id,
+                imageUrl,
+                japaneseName,
+              },
+              details,
+              isBranching, //現在の進化段階の進化先数
+              parentIsBranching: parentBranching //前（親）の進化段階の進化先数（※CSS用のフラグ）
+            });
+
+        for (const next of startPokemon.evolves_to) { //evolves_to に含まれるすべての進化先に対して、再帰的に同じ処理を行う
+            await traverse(next, isBranching); //次の進化段階で前（親）の進化先数として使うために、持って行って再帰する
+        }        
+    }
+
+    await traverse(chain, false); //開始時は前の進化段階（親）が無いため、falseを渡しておく
+    console.log(result);
+    return result;
+    
+}
+
