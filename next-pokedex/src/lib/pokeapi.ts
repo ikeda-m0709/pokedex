@@ -11,7 +11,8 @@ import { PokemonType,
     EffectEntry, 
     NamedApiResource,
     ChainLink ,
-    ProcessedEvolutionDetail
+    ProcessedEvolutionDetail,
+    evolutionStep
 } from './types';
 
 const BASE_URL = 'https://pokeapi.co/api/v2'; //APIからの取得URLの共通部分
@@ -43,13 +44,23 @@ export async function fetchSpecies(id: string): Promise<PokemonSpeciesDetail | n
     return data;
 }
 
+//※triggerだけ↓の日本語データ取得ができないため、マッピングする
+const triggerMap: Record<string, string> = {
+    "level-up": "レベルアップ",
+    "trade": "通信交換",
+    "use-item": "アイテム使用",
+    "shed": "抜け殻",
+    "spin": "回転",
+    "other": "その他",
+};
+
 //日本語データ取得（※NamedApiResource（nameとurlを持つ）を渡すと、そのリソースの日本語名を返す）
 export async function fetchJapaneseName(resource: NamedApiResource): Promise<string> {
     const res = await fetch(resource.url); //ポケモン1匹分の.〇〇〇.urlが入る
-    if (!res.ok) return resource.name; //受け取れなかったときは英語表記を返す
+    if (!res.ok) return triggerMap[resource.name] ?? resource.name; //受け取れなかったときは英語表記(マッピング済み)を、それも無理なら英語表記そのまま返す
     const data = await res.json();
     const name = data.names.find((n: { name:string; language: { name: string }}) => n.language.name === "ja-Hrkt")?.name;
-    return name;
+    return name ?? triggerMap[resource.name] ?? resource.name;
 }
 
 //「アビリティ詳細（日本語名・効果）」の取得
@@ -166,6 +177,41 @@ export function getEvolutionList(chain: ChainLink): ChainLink[] {
     return result;
 }
 
+//※修正後
+export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionStep[]> {
+    const result: evolutionStep[] = [];
+
+    async function traverse(node: ChainLink, parentBranching: boolean) {
+        const raw = await fetchRawPokemon(node.species.name);
+        if(!raw) return null;
+        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+        const japaneseName = await fetchJapaneseName(node.species);
+        const details = await getEvolutionDetails(node);
+
+        const isBranching = node.evolves_to.length > 1;
+
+        result.push({
+              prof: {  
+                id: raw.id,
+                imageUrl,
+                japaneseName,
+              },
+              details,
+              isBranching, //現在の進化段階の進化先数
+              parentIsBranching: parentBranching //前（親）の進化段階の進化先数（※CSS用のフラグ）
+            });
+
+        for (const next of node.evolves_to) { //evolves_to に含まれるすべての進化先に対して、再帰的に同じ処理を行う
+            await traverse(next, isBranching); //次の進化段階で前（親）の進化先数として使うために、持って行って再帰する
+        }        
+    }
+
+    await traverse(chain, false); //開始時は前の進化段階（親）が無いため、falseを渡しておく
+    console.log(result);
+    return result;
+    
+}
+
 //↑のchainを元に、進化条件の詳細の取得
 export async function getEvolutionDetails(chain: ChainLink):Promise<ProcessedEvolutionDetail[]> {
     //chain.evolution_detailsの型はEvolutionDetail[] | nullなので、nullの場合は空配列を返す
@@ -174,6 +220,7 @@ export async function getEvolutionDetails(chain: ChainLink):Promise<ProcessedEvo
 
     const details = await Promise.all(
         chain.evolution_details.map(async d => {
+            console.log("trigger name:", d.trigger?.name);
             return {
                 item: d.item ? await fetchJapaneseName(d.item) : null, //型がitem: NamedApiResource | nullなので、それに合わせて返さないと
                 trigger: d.trigger ? await fetchJapaneseName(d.trigger) : null,

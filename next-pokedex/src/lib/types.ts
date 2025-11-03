@@ -180,3 +180,10 @@ export interface ProcessedEvolutionDetail {
   trade_species: string | null;
   turn_upside_down: boolean;
 }
+
+export interface evolutionStep {
+  prof: EvolutionProf; // ポケモンの基本情報（画像・名前・ID）
+  details: ProcessedEvolutionDetail[]; // 進化条件
+  isBranching: boolean;  // 分岐進化かどうか（CSS切り替え用）
+  parentIsBranching: boolean;
+}
