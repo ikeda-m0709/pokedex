@@ -112,11 +112,30 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/*スタイルの上にカーソル乗せると、詳細が見られる*/
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
+    @apply bg-[lab(97_-1.5_0.5)];
+  }
+  h1 {
+    @apply text-3xl font-bold p-3 m-2;
+  }
+  h2 {
+    @apply text-2xl p-3 m-2;
+  }
+  h3 {
+    @apply text-xl p-3 m-2;
+  }
+  p {
+    @apply text-base p-1 m-1.5;
+  }
+  ul {
+    @apply bg-background text-foreground;
+  }
+  li {
     @apply bg-background text-foreground;
   }
 }
