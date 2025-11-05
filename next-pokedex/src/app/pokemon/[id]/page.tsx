@@ -20,7 +20,7 @@ export default async function PokemonPage({ params }: { params: { id: string }})
 
     return (
         <div>
-            <div>
+            <div className="flex justify-between mx-7 mt-5">
                 {prevPokemon && (
                     <Link href={`/pokemon/${prevPokemon.id}`}>
                         ⇐{prevPokemon.japaneseName}
@@ -32,7 +32,7 @@ export default async function PokemonPage({ params }: { params: { id: string }})
                     </Link>
                 )}
             </div>
-            <PokemonDetail  pokemon={pokemon}/>
+            <PokemonDetail pokemon={pokemon}/>
             <Link className={buttonVariants({ variant: "default" })} href="/pokemon">一覧へ</Link>
         </div>
     );
