@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";//Next.js 13以降の App Router（app/ ディレクトリ） では、従来の"next/router"は使用不可。代わりに⇐を使用する
 import { useState } from "react";
 
+import { Search } from 'lucide-react'
+
 interface SearchFormProps {
     initialQuery?: string;
 }
@@ -25,19 +27,22 @@ export function SearchForm({ initialQuery = "" }: SearchFormProps) {
 
     return (
         <div>
-            <form onSubmit={handleSubmit}>
-                <input onChange={(e) => {
-                    setQuery(e.target.value);
-                    setErrorMessage("");//エラーメッセージの除去
-                }}
-                    value={query} 
-                    type="text" 
-                    placeholder='ポケモンの名前を入力（カタカナ・ひらがな）'
-                 />
-                <button type="submit">検索</button>
-            </form>
-            {errorMessage && (<p>{errorMessage}</p>) }
+            <div>
+                <form className="flex items-center justify-center" onSubmit={handleSubmit}>
+                    <input className="min-w-73 px-2 py-1 border-2 border-gray-300 rounded-md bg-white" onChange={(e) => {
+                        setQuery(e.target.value);
+                        setErrorMessage("");//エラーメッセージの除去
+                    }}
+                        value={query} 
+                        type="text" 
+                        placeholder='ポケモンの名前を入力（カタカナ・ひらがな）'
+                    />
+                    <button className="ml-1.5 p-1.5 bg-orange-400 rounded-md" type="submit"><Search color="#fff" size={15}/></button>
+                </form>
+            </div>
+            <div>
+                {errorMessage && (<p>{errorMessage}</p>) }
+            </div>
         </div>
-
     )
 }

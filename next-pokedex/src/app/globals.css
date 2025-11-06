@@ -121,21 +121,15 @@
     @apply bg-[lab(97_-1.5_0.5)] text-gray-900;
   }
   h1 {
-    @apply text-3xl font-bold p-3 m-2;
+    @apply text-4xl font-bold p-3 m-2;
   }
   h2 {
-    @apply text-2xl p-3 m-2;
+    @apply text-3xl p-3 m-2;
   }
   h3 {
-    @apply text-xl p-3 m-2;
+    @apply text-lg font-bold;
   }
   p {
-    @apply text-base p-1 m-1.5;
-  }
-  ul {
-    @apply bg-background text-foreground;
-  }
-  li {
-    @apply bg-background text-foreground;
+    @apply text-base;
   }
 }

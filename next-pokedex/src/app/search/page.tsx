@@ -18,14 +18,14 @@ export default async function Search ({searchParams}: Props) {
   const query = resolvedParams.q || "";
 
   return (
-    <div>
+    <div className='text-center'>
         <h1>ポケモン検索</h1>
-        <p>ポケモンの名前で検索できます（カタカナ・ひらがな）</p>
+        <p className='mt-3 text-lg'>ポケモンの名前で検索できます（カタカナ・ひらがなOK）</p>
         
-          <div>
+          <div className='mt-10'>
             <SearchForm />
             {!query ? /*検索するとここに結果の画像やみつかりませんでしたの文言が表示される*/
-              <p>上の検索フォームにポケモンの名前を入力してください</p> :
+              <p className='mt-5'>上の検索フォームにポケモンの名前を入力してください</p> :
                 <Suspense fallback={<Loading message = "検索中……"/>}>
                   <SearchResult query={query} />
                 </Suspense> 
