@@ -29,7 +29,7 @@ export default async function PokemonDetail({ pokemon }: {pokemon: ProcessedPoke
                     </div>
                     <CardContent className='grid grid-cols-2 gap-5 mt-5'>
                         <div className='flex justify-center items-center'>
-                            <Image src={pokemon.imageUrl} alt="ポケモン画像" width="300" height="300" className='max-w-full max-h-full'/>
+                            <Image src={pokemon.imageUrl} alt="ポケモン画像" width="400" height="400" className='max-w-full max-h-full'/>
                         </div>
                         <div className='py-5 px-10'>
                             <div>
