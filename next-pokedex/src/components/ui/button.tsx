@@ -28,7 +28,8 @@ const buttonVariants = cva(
         icon: "size-9",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
-        "icon-custom": "h-10 rounded-md px-30 has-[>svg]:px-4", //ポケモン詳細ページ内の「進化系統ページへ」のpadding設定
+        "icon-custom": "max-w-full w-full h-10 rounded-md", //ポケモン詳細ページ内の「進化系統ページへ」のpadding設定
+          //max-w-full→親の幅を超えないように制限 + w-full親の幅いっぱいに広げる = レスポンシブ対応できる
       },
     },
     defaultVariants: {
