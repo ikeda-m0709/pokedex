@@ -132,4 +132,7 @@
   p {
     @apply text-base text-[lab(42_-28.47_5.9)];
   }
+  ul{
+    @apply text-base text-[lab(42_-28.47_5.9)];
+  }
 }
