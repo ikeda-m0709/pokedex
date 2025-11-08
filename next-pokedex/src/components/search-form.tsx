@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";//Next.js 13以降の App Router（a
 import { useState } from "react";
 
 import { Search } from 'lucide-react'
+import { CircleAlert } from 'lucide-react';
 
 interface SearchFormProps {
     initialQuery?: string;
@@ -19,7 +20,7 @@ export function SearchForm({ initialQuery = "" }: SearchFormProps) {
     const cleanedQuery = query.replace(/\s/g, '');//スペースを入力された値から除去する
     const inValid = /^[\u3040-\u309F\u30A0-\u30FF]+$/.test(cleanedQuery);//カタカナ・ひらがな以外の入力時にエラーを出す
     if(!inValid) {
-        setErrorMessage("!「カタカナ」または「ひらがな」で入力してください");
+        setErrorMessage("「カタカナ」または「ひらがな」で入力してください");
         return ;
     }
     router.push(`/search?q=${cleanedQuery}`);
@@ -41,7 +42,12 @@ export function SearchForm({ initialQuery = "" }: SearchFormProps) {
                 </form>
             </div>
             <div>
-                {errorMessage && (<p>{errorMessage}</p>) }
+                {errorMessage && (
+                    <div className="mt-5 flex items-center justify-center">
+                        <CircleAlert color="red"  size={20}/>
+                        <p className="pl-2 text-red-600">{errorMessage}</p>
+                    </div>
+                    )}
             </div>
         </div>
     )

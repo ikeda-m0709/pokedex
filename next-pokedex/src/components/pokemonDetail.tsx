@@ -17,7 +17,7 @@ export default async function PokemonDetail({ pokemon }: {pokemon: ProcessedPoke
 
     return (
         <Suspense fallback={<Loading />}>
-            <Card className='mt-7 max-w-4xl mx-auto'>
+            <Card className='mt-4 max-w-4xl mx-auto'>
                 <main>
                     <div className='text-center'>
                         <CardHeader>
