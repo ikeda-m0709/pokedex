@@ -9,34 +9,30 @@ import { ChevronsDown } from 'lucide-react';
 
 //失敗した修正１
 
-export default async function EvolutionDetailPage({ data }: {data: evolutionStep[]}) {
+export default async function EvolutionDetailPage2000({ data }: {data: evolutionStep[]}) {
   const parent = data[0];
   const child = data.slice(1);
 
   return (
     <div className='flex flex-col justify-items-center pb-7 border-2 border-amber-700 rounded-2xl bg-blue-700'>
-      <h2 className='text-2xl font-bold'>進化系統図</h2>
+        <h2 className='text-2xl font-bold'>進化系統図</h2>
 
-      <div className='flex flex-col items-center'>
-
-        <div className='bg-amber-400'> {/*進化の起点のみ別表示にし、分岐進化は */}
-          <div className='bg-amber-50  text-center max-w-40'>
+        <div className=' justify-items-center space-y-5  bg-amber-400'> {/*進化の起点のみ別表示にし、分岐進化は */}
+          <div className='bg-amber-50  text-center max-w-60'>
             <PokemonCard key={parent.prof.id} pokemon={parent.prof} />
           </div>
-        </div>
 
-        <div className='flex flex-row flex-wrap justify-center'>
           {child.length > 0 ? (
             child.map(p => (
-              <div className='flex flex-col items-center bg-emerald-700' key={p.prof.id}>
-                  <div className='flex flex-col items-center'>
-                    <div className=' bg-fuchsia-800 mb-5 text-blue-200'>
+              <div className=' justify-items-center bg-emerald-700' key={p.prof.id}>
+                  <div>
+                    <div className=' justify-items-center bg-fuchsia-800 mb-5 text-blue-200'>
                       <ChevronsDown size={40} />
                     </div>
                     <ul className='px-3 py-2 bg-red-400 rounded-2xl'>
                       {p.details.map((d, i) => (
                         <React.Fragment key={i}> {/*returnだけでなくmap()の時も、複数の要素を並べる時は必ず一つの親要素が必要。だが、ulの中にdivだとおかしいので、こちらでラップする */}
-                          {d.trigger && <li>【進化条件{i+1}: {d.trigger}】</li>}
+                          {d.trigger && <li>【進化条件{i+1}（きっかけ：{d.trigger}）】</li>}
                           {d.item && <li>アイテム：{d.item}</li>}
                           {d.gender &&(
                             <li>
@@ -80,14 +76,13 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
                       }
                     </ul>
                   </div>
-              <div className='mt-3 text-center max-w-40'>
+              <div className='mt-3 text-center max-w-60'>
                 <PokemonCard key={p.prof.id} pokemon={p.prof} />
               </div>
             </div>
             ))
           )
           : <p>※進化なし</p>}
-        </div>
         </div>
     </div>
   )
