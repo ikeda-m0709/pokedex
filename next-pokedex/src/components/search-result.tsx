@@ -49,11 +49,13 @@ export async function SearchResult ({ query }: Props) {
         <div>
             <Suspense fallback={<Loading />}>
                 {matchedProcessedPokemons.length > 0 ? 
-                    <div>
-                        <p>{query}の検索結果:{matchedProcessedPokemons.length}件見つかりました</p>
-                        {matchedProcessedPokemons.map((pokemon:ProcessedPokemon) => (
-                            <PokemonCard key={pokemon.id} pokemon={pokemon} />
-                        ))}
+                    <div className='mx-7 mb-30'>
+                        <p className='text-left'>「{query}」の検索結果: <span className='font-bold'>{matchedProcessedPokemons.length}件</span> 見つかりました</p>
+                        <div className='grid grid-cols-5 gap-5'>
+                            {matchedProcessedPokemons.map((pokemon:ProcessedPokemon) => (
+                                <PokemonCard key={pokemon.id} pokemon={pokemon} />
+                            ))}
+                        </div>
                     </div>
                     :
                     <div>

@@ -12,9 +12,9 @@ import Link from 'next/link';
 export default function Home() {
 
   return (
-    <div  className="min-h-screen flex flex-col">{/*画面の高さと同じ最小高さを設定（100vh）*/}
-      <main className="flex-[0.7] mx-4">{/*一番下のAPIリンクを画面下に出す設定（flex-1だと自分だけで残りの高さを満たす）② */}
-        <h1 className="text-center text-gray-800 mt-10">ポケモン図鑑へようこそ</h1>
+    <div>
+      <main className="mx-4">
+        <h1 className="text-center mt-10">ポケモン図鑑へようこそ</h1>
         <p className="text-center mt-3">お気に入りのポケモンを探してみよう！</p>
         
         <div className="grid grid-cols-2 gap-10 max-w-3xl mx-auto mt-20">
@@ -39,7 +39,7 @@ export default function Home() {
           </Card>
         </div>
       </main>
-        <p className="text-center text-gray-700">このアプリは<a className="text-blue-600" href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer">PokéAPI</a>を使用しています</p>
+        <p className=" mt-50 text-center text-gray-700">このアプリは<a className="text-blue-600" href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer">PokéAPI</a>を使用しています</p>
     </div>
   );
 }
