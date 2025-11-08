@@ -9,17 +9,16 @@ import PokemonCard from '@/components/card'
 export default async function EvolutionDetailPage({ data }: {data: evolutionStep[]}) {
 
   return (
-    <div>
-        <h2>進化系統図</h2>
-        <div>
+    <div className='pb-7 justify-items-center bg-blue-700'>
+        <h2 className='text-2xl font-bold'>進化系統図</h2>
+        <div className='flex flex-col space-y-10  bg-amber-400'>
           {data.map(p => (
-            <div key={p.prof.id}>
+            <div className=' justify-items-center bg-emerald-700' key={p.prof.id}>
+              {/* ↓の二つの条件分岐は、進化の有無と、進化条件の有無（無ければulを作らない）*/}
               {data.length > 1 ? (
-                <ul>
-                  {p.details.map((d, i) => {
-                    console.log("trigger:", d.trigger);
-                    console.log("min_level:", d.min_level);
-                    return (
+                p.details.length > 0 &&(
+                <ul className='border-2'>
+                  {p.details.map((d, i) => (
                     <React.Fragment key={i}> {/*returnだけでなくmap()の時も、複数の要素を並べる時は必ず一つの親要素が必要。だが、ulの中にdivだとおかしいので、こちらでラップする */}
                       {d.trigger && <li>【進化条件{i+1}（きっかけ：{d.trigger}）】</li>}
                       {d.item && <li>アイテム：{d.item}</li>}
@@ -61,13 +60,15 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
                       {d.trade_species && <li>交換相手：{d.trade_species}</li>}
                       {d.turn_upside_down === true && <li>本体操作：本体を逆さにしてレベルアップ</li>}
                     </React.Fragment>
-                  );
-                  })
+                    ))
                   }
                 </ul>
+                )
               ) : <p>※進化なし</p>}
-
-              <PokemonCard key={p.prof.id} pokemon={p.prof} />
+              <div className='max-w-60'>
+                <PokemonCard key={p.prof.id} pokemon={p.prof} />
+                <p className='text-blue-200 text-center'>↓</p>
+              </div>
             </div>
           ))}
         </div>

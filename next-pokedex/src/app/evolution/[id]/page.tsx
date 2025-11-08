@@ -18,13 +18,20 @@ export default async function EvolutionPage({ params }: { params: { id: string }
     const evolutionSteps = await buildEvolutionSteps(chain); //全ての進化段階と、各進化条件の取得
 
   return (
-    <div>
-        <h1>{pokemon.japaneseName}の進化系統</h1>
+    <div className='mt-7 mx-7 mb-20'>
+      <div className='text-center'>
+        <h1 className='text-3xl'>{pokemon.japaneseName}の進化系統</h1>
         <p>進化前・進化後のポケモンと進化条件を確認できます</p>
-        <Link  className={buttonVariants({ variant: "outline" })} href={`/pokemon/${params.id}`}>⇐ 詳細ページに戻る</Link>
-        <div>
-          <EvolutionDetailPage data={evolutionSteps}/>
-        </div>
+      </div>
+
+      <div className='mt-8'>
+        <EvolutionDetailPage data={evolutionSteps}/>
+      </div>
+
+      <div className='fixed bottom-0 right-0 mx-4 mb-6'>
+        <Link  className={buttonVariants({ variant: "default" })} href={`/pokemon/${params.id}`}>⇐ 詳細ページに戻る</Link>
+      </div>
+
     </div>
   )
 }
