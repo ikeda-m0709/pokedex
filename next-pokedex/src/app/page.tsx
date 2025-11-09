@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Card,
   CardContent,
@@ -11,24 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 
-import {getEvolution,getEvolutionDetails,buildEvolutionSteps }from "@/lib/pokeapi"
-import { useEffect } from "react";
-
 export default function Home() {
-
-  useEffect(() => {
-    async function checkEvolution() {
-      const a = await getEvolution("848");
-      if (a !== null) {
-        const b = getEvolutionDetails(a);
-        const c = buildEvolutionSteps(a);
-        console.log("chainの中身:", a);
-        console.log("chainの中のevolution details:", b);
-        console.log("ポケモン配列resultの中:", c);
-      }
-    }
-    checkEvolution();
-  }, []);
 
   return (
     <div>

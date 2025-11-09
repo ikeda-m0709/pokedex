@@ -21,7 +21,7 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
         {/*1匹目のポケモンの箱*/}
         <div className='mt-2'> {/*進化の起点のみ別表示 */}
           <div className='text-center max-w-40'>
-            <PokemonCard key={parent.prof.id} pokemon={parent.prof} />
+            <PokemonCard key={parent.prof.id} pokemon={parent.prof} cardClassName='text-[1.1rem] font-bold'/>
             {data.length === 1 && <p className='mt-5 font-bold'>※進化系統なし</p>}
           </div>
         </div>
@@ -86,7 +86,7 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
                 </ul>
               </div>
               <div className='mt-3 text-center max-w-40'>
-                <PokemonCard key={p.prof.id} pokemon={p.prof} />
+                <PokemonCard key={p.prof.id} pokemon={p.prof} cardClassName='text-[1.1rem] font-bold'/>
               </div>
             </div>
           ))
@@ -152,7 +152,7 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
               </ul>
             </div>
             <div className='mt-3 text-center max-w-40'>
-              <PokemonCard key={child[0].prof.id} pokemon={child[0].prof} />
+              <PokemonCard key={child[0].prof.id} pokemon={child[0].prof} cardClassName='text-[1.1rem] font-bold'/>
             </div>
           </div>
 
@@ -210,7 +210,7 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
                     </ul>
                 </div>
                 <div className='mt-3 text-center max-w-40'>
-                  <PokemonCard key={p.prof.id} pokemon={p.prof} />
+                  <PokemonCard key={p.prof.id} pokemon={p.prof} cardClassName='text-[1.1rem] font-bold'/>
                 </div>
               </div>
             ))}
@@ -229,9 +229,7 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
               {/*①の自分は進化なしを先に表示する */}
               {child
                 .filter(p => p.countParentBranching > 1)
-                .map(p => {
-                console.log("進化先:", p.prof.japaneseName, "詳細:", p.details)//確認用
-                
+                .map(p => {                
                 return (
                   <div className='flex flex-col items-center' key={p.prof.id}>
                     <div className='flex flex-col items-center'>
@@ -285,7 +283,7 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
                       </ul>
                     </div>
                     <div className='mt-3 text-center max-w-40'>
-                      <PokemonCard key={p.prof.id} pokemon={p.prof} />
+                      <PokemonCard key={p.prof.id} pokemon={p.prof} cardClassName='text-[1.1rem] font-bold'/>
                     </div>
                   </div>
                 )
@@ -296,7 +294,6 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
               {child
                 .filter(p => p.countParentBranching === 1)
                 .map(p => {
-                console.log("進化先:", p.prof.japaneseName, "詳細:", p.details)//確認用
                 
                 return (
                   <div className='flex flex-col items-center' key={p.prof.id}>
@@ -351,7 +348,7 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
                       </ul>
                     </div>
                     <div className='mt-3 text-center max-w-40'>
-                      <PokemonCard key={p.prof.id} pokemon={p.prof} />
+                      <PokemonCard key={p.prof.id} pokemon={p.prof} cardClassName='text-[1.1rem] font-bold'/>
                     </div>
                   </div>
                 )

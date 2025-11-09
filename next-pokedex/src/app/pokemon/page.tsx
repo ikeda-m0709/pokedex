@@ -28,7 +28,7 @@ import { Loading} from '@/components/loading'
         <h1>ポケモン図鑑</h1>
         <p>画像をクリックして詳細を表示できます</p>
         <Suspense fallback={<Loading />}>
-          <div className='grid grid-cols-4 gap-5 mt-10 mx-7'>
+          <div className='grid grid-cols-2 sm:grid-cols-4 gap-5 mt-10 mx-7'>
             {pokemons.map((pokemon) => (
               <PokemonCard key={pokemon.id} pokemon={pokemon}></PokemonCard>
             ))}

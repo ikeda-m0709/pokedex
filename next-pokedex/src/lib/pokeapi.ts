@@ -100,7 +100,7 @@ export async function fetchPokemon(id: string): Promise<ProcessedPokemon> {
         id: raw.id,
         name: raw.name,
         japaneseName,
-        imageUrl: raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default, //.other?.['official-artwork']?の部分をOptional chaining（?.）にしないと、sprites.other や sprites.other['official-artwork'] は 存在しない可能性がある ＝ undefined になる可能性がある、とエラーが出てしまう
+        imageUrl: raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png", //.other?.['official-artwork']?の部分をOptional chaining（?.）にしないと、sprites.other や sprites.other['official-artwork'] は 存在しない可能性がある ＝ undefined になる可能性がある、とエラーが出てしまう
         types,
         height: raw.height / 10,
         weight: raw.weight / 10,
@@ -166,7 +166,6 @@ export async function getEvolutionDetails(chain: ChainLink):Promise<ProcessedEvo
 
     const details = await Promise.all(
         chain.evolution_details.map(async d => {
-            console.log("trigger name:", d.trigger?.name);
             return {
                 item: d.item ? await fetchJapaneseName(d.item) : null, //型がitem: NamedApiResource | nullなので、それに合わせて返さないと
                 trigger: d.trigger ? await fetchJapaneseName(d.trigger) : null,
@@ -193,58 +192,6 @@ export async function getEvolutionDetails(chain: ChainLink):Promise<ProcessedEvo
     return details;
 }
 
-//③↑の①で取得したchainと、②の進化条件詳細を使い、進化段階ごとの進化条件情報の網羅版を取得
-
-/*最初のやつを修正して、だめだったやつ
-export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionStep[]> {
-    const result: evolutionStep[] = [];
-
-        const raw = await fetchRawPokemon(chain.species.name);
-        if(!raw) return result;
-        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
-        const japaneseName = await fetchJapaneseName(chain.species);
-        const details = await getEvolutionDetails(chain);
-        const isBranching = chain.evolves_to.length > 1;
-
-        result.push({
-                prof: {  
-                    id: raw.id,
-                    imageUrl,
-                    japaneseName,
-                },
-                details,
-                isBranching, //現在の進化段階の進化先数
-                parentIsBranching: false //前（親）の進化段階の進化先数（※CSS用のフラグ）
-            });
-
-    console.log("for前：" + result);
-
-
-    for(const next of chain.evolves_to) {
-        const nextRaw = await fetchRawPokemon(next.species.name);
-        if(!nextRaw) continue;
-        const nextImageUrl = nextRaw.sprites.other?.['official-artwork']?.front_default ?? nextRaw.sprites.front_default;
-        const nextJapaneseName = await fetchJapaneseName(next.species);
-        const nextDetails = await getEvolutionDetails(next);
-        const nextIsBranching = next.evolves_to.length > 1;
-
-        result.push({
-                prof: {  
-                id: nextRaw.id,
-                imageUrl: nextImageUrl,
-                japaneseName: nextJapaneseName,
-                },
-                details: nextDetails,
-                isBranching: nextIsBranching, //現在の進化段階の進化先数
-                parentIsBranching: isBranching //前（親）の進化段階の進化先数（※CSS用のフラグ）
-            });
-        }
-
-    console.log("最終結果：" + result);
-    return result;    
-}
-*/
-
 
 export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionStep[]> {
         const result: evolutionStep[] = []; //ここに進化系統のポケモンを全て詰める
@@ -252,7 +199,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
         //進化の最初（起点）のポケモンをpushする
         const raw = await fetchRawPokemon(chain.species.name);
         if(!raw) return result;
-        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
         const japaneseName = await fetchJapaneseName(chain.species);
 
         result.push({
@@ -273,7 +220,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                 //まず自分をpush
                 const raw = await fetchRawPokemon(next.species.name);
                 if(!raw) return result; //???
-                const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+                const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
                 const japaneseName = await fetchJapaneseName(next.species);
                 const details = await getEvolutionDetails(next);
 
@@ -296,7 +243,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                     case 1: //一方向に進化する　※フシギダネ系
                         const raw = await fetchRawPokemon(next.evolves_to[0].species.name);
                         if(!raw) return result; //???
-                        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+                        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
                         const japaneseName = await fetchJapaneseName(next.evolves_to[0].species);
                         const details = await getEvolutionDetails(next.evolves_to[0]);
 
@@ -316,7 +263,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                         for(const n of next.evolves_to) {
                         const raw = await fetchRawPokemon(n.species.name);
                         if(!raw) return result; //???
-                        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+                        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
                         const japaneseName = await fetchJapaneseName(n.species);
                         const details = await getEvolutionDetails(n);
 
@@ -339,7 +286,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                 //まず自分をpush
                 const raw = await fetchRawPokemon(next.species.name);
                 if(!raw) return result; //???
-                const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+                const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
                 const japaneseName = await fetchJapaneseName(next.species);
                 const details = await getEvolutionDetails(next);
 
@@ -358,7 +305,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                     for(const n of next.evolves_to) {
                         const raw = await fetchRawPokemon(n.species.name);
                         if(!raw) return result; //???
-                        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+                        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
                         const japaneseName = await fetchJapaneseName(n.species);
                         const details = await getEvolutionDetails(n);
 

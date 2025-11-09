@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body>{/*bodyをview-height100%にする*/}
+      <body>
       <Header />
       {children}
       </body>
