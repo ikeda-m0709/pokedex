@@ -110,7 +110,7 @@ export async function fetchPokemon(id: string): Promise<ProcessedPokemon> {
 }
 
 ////加工済みポケモン一覧取得（ページ単位）////
-export async function getProcessdePokemonList(page: number): Promise<ProcessedPokemon[]> {
+export async function getProcessedPokemonList(page: number): Promise<ProcessedPokemon[]> {
     const limit = 20;
     const offset = (page - 1) * limit;//対象のページに本当は何匹いたとしても、20匹取ってこようとする処理
     
