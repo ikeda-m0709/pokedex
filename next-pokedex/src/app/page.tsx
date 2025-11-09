@@ -18,7 +18,7 @@ export default function Home() {
 
   useEffect(() => {
     async function checkEvolution() {
-      const a = await getEvolution("133");
+      const a = await getEvolution("4");
       if (a !== null) {
         const b = getEvolutionDetails(a);
         const c = buildEvolutionSteps(a);

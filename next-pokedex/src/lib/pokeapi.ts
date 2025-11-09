@@ -271,9 +271,70 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
         
         //次のポケモンをpushする　chain.evolves_toの中には、次の進化のevolution_detailsとevolves_toが入ってる
         for(const next of chain.evolves_to) {
-            //最初のポケモンが一方向進化かどうか
+            //最初のポケモンが一方向進化
             if(chain.evolves_to.length === 1) {
-                ////////////////////////////////ここから作業！！！ラルトス系か、ディグダ系か、フシギダネ系か
+                //まず自分をpush
+                const raw = await fetchRawPokemon(next.species.name);
+                if(!raw) return result; //???
+                const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+                const japaneseName = await fetchJapaneseName(next.species);
+                const details = await getEvolutionDetails(next);
+
+                result.push({
+                    prof: {
+                        id: raw.id,
+                        imageUrl,
+                        japaneseName,
+                    },
+                    details, //最初のポケが自分に進化するための条件たち
+                    countparentBranching: chain.evolves_to.length, //最初のポケモンの進化分岐（一方向進化）
+                    countBranching:next.evolves_to.length  //自分が、0（進化なし）か、1（一方向進化）、複数（多方向進化）かどうか
+                });
+
+                //さらに進化するか（しない、一方向、多方向の3パターン）
+                switch (next.evolves_to.length){
+                    case 0: //進化しない　※ディグダ系
+                        break;
+
+                    case 1: //一方向に進化する　※フシギダネ系
+                        const raw = await fetchRawPokemon(next.evolves_to[0].species.name);
+                        if(!raw) return result; //???
+                        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+                        const japaneseName = await fetchJapaneseName(next.evolves_to[0].species);
+                        const details = await getEvolutionDetails(next.evolves_to[0]);
+
+                        result.push({
+                            prof: {
+                                id: raw.id,
+                                imageUrl,
+                                japaneseName,
+                            },
+                            details, //最初のポケが自分に進化するための条件たち
+                            countparentBranching: next.evolves_to.length, ////自分の前のポケモンの進化有無
+                            countBranching:next.evolves_to.length  //自分が、1（一方向進化）の場合のみ
+                        });
+                        break;
+                    
+                    default: //上記以外（多方向に進化する）　※ラルトス系
+                        for(const n of next.evolves_to) {
+                        const raw = await fetchRawPokemon(n.species.name);
+                        if(!raw) return result; //???
+                        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+                        const japaneseName = await fetchJapaneseName(n.species);
+                        const details = await getEvolutionDetails(n);
+
+                        result.push({
+                            prof: {
+                                id: raw.id,
+                                imageUrl,
+                                japaneseName,
+                            },
+                            details, //最初のポケが自分に進化するための条件たち
+                            countparentBranching: next.evolves_to.length, //自分の前のポケモンの進化有無
+                            countBranching:n.evolves_to.length  //自分が、0（進化なし）か、1（一方向進化）、複数（多方向進化）かどうか
+                        });
+                    }
+                }
             }
 
             //最初のポケモンが多方向進化
@@ -320,5 +381,5 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
         }
 
     return result;
-
+    
 }
