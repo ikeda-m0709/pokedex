@@ -246,9 +246,6 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
 */
 
 
-
-
-
 export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionStep[]> {
         const result: evolutionStep[] = []; //ここに進化系統のポケモンを全て詰める
 
@@ -265,7 +262,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                     japaneseName,
                 },
                 details:[], //最初のポケモンは進化してないから、取得してもどうせ空なので
-                countparentBranching:0, //最初のポケモンは進化してないから、自分の前がいないので必ず0
+                countParentBranching:0, //最初のポケモンは進化してないから、自分の前がいないので必ず0
                 countBranching:chain.evolves_to.length  //自分が、0（進化なし）か、1（一方向進化）、複数（多方向進化）かどうか
             });
         
@@ -287,7 +284,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                         japaneseName,
                     },
                     details, //最初のポケが自分に進化するための条件たち
-                    countparentBranching: chain.evolves_to.length, //最初のポケモンの進化分岐（一方向進化）
+                    countParentBranching: chain.evolves_to.length, //最初のポケモンの進化分岐（一方向進化）
                     countBranching:next.evolves_to.length  //自分が、0（進化なし）か、1（一方向進化）、複数（多方向進化）かどうか
                 });
 
@@ -310,7 +307,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                                 japaneseName,
                             },
                             details, //最初のポケが自分に進化するための条件たち
-                            countparentBranching: next.evolves_to.length, ////自分の前のポケモンの進化有無
+                            countParentBranching: next.evolves_to.length, ////自分の前のポケモンの進化有無
                             countBranching:next.evolves_to.length  //自分が、1（一方向進化）の場合のみ
                         });
                         break;
@@ -330,7 +327,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                                 japaneseName,
                             },
                             details, //最初のポケが自分に進化するための条件たち
-                            countparentBranching: next.evolves_to.length, //自分の前のポケモンの進化有無
+                            countParentBranching: next.evolves_to.length, //自分の前のポケモンの進化有無
                             countBranching:n.evolves_to.length  //自分が、0（進化なし）か、1（一方向進化）、複数（多方向進化）かどうか
                         });
                     }
@@ -353,7 +350,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                         japaneseName,
                     },
                     details, //最初のポケが自分に進化するための条件たち
-                    countparentBranching: chain.evolves_to.length, //最初のポケモンの進化分岐（多方向進化）
+                    countParentBranching: chain.evolves_to.length, //最初のポケモンの進化分岐（多方向進化）
                     countBranching:next.evolves_to.length  //自分が、0（進化なし）か、1（一方向進化）、複数（多方向進化）かどうか
                 });
                 //さらに進化するか
@@ -372,7 +369,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                                 japaneseName,
                             },
                             details, //最初のポケが自分に進化するための条件たち
-                            countparentBranching: next.evolves_to.length, //自分の前のポケモンの進化有無
+                            countParentBranching: next.evolves_to.length, //自分の前のポケモンの進化有無
                             countBranching:n.evolves_to.length  //自分が、0（進化なし）か、1（一方向進化）、複数（多方向進化）かどうか
                         });
                     }
@@ -381,5 +378,5 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
         }
 
     return result;
-    
+
 }

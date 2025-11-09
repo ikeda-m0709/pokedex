@@ -193,7 +193,7 @@ export interface evolutionStep {
 export interface evolutionStep {
   prof: EvolutionProf; // ポケモンの基本情報（画像・名前・ID）
   details: ProcessedEvolutionDetail[]; // 進化条件
-  countparentBranching: number // 自分の進化前のポケモンのevolves_to.lengthが、0（進化なし）か、1（一方向進化）、複数（多方向進化）の判断
+  countParentBranching: number // 自分の進化前のポケモンのevolves_to.lengthが、0（進化なし）か、1（一方向進化）、複数（多方向進化）の判断
   countBranching: number;  // 自分のevolves_to.lengthが、0（進化なし）か、1（一方向進化）、複数（多方向進化）の判断
 }
 
