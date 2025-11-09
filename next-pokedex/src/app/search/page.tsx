@@ -7,13 +7,8 @@ import Link from 'next/link';
 import { buttonVariants } from "@/components/ui/button"
 
 
-interface SearchParams {
-  q?: string;
-  page?: string;
-}
-
 interface Props {
-  searchParams: Promise<SearchParams>;
+  searchParams:{ q?: string; page?: string;}
 }
 
 export default async function Search ({searchParams}: Props) {
