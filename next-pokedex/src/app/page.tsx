@@ -17,14 +17,14 @@ export default function Home() {
         <h1 className="text-center mt-10">ポケモン図鑑へようこそ</h1>
         <p className="text-center mt-3">お気に入りのポケモンを探してみよう！</p>
         
-        <div className="grid grid-cols-2 gap-10 max-w-3xl mx-auto mt-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 max-w-sm sm:max-w-3xl mx-auto mt-20">
           <Card>
             <CardHeader>
               <CardTitle>ポケモン一覧</CardTitle>
               <CardDescription>すべてのポケモンを一覧で表示します。画像をクリックして詳細を確認できます。</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button><Link href="/pokemon">一覧を見る</Link></Button>
+              <Button className="bg-emerald-500"><Link href="/pokemon">一覧を見る</Link></Button>
             </CardContent>
           </Card>
 
@@ -34,7 +34,7 @@ export default function Home() {
               <CardDescription>名前で検索してお気に入りのポケモンを見つけましょう。日本語（ひらがな・カタカナ）で検索できます。</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button><Link href="/search">検索する</Link></Button>
+              <Button className="bg-orange-500"><Link href="/search">検索する</Link></Button>
             </CardContent>
           </Card>
         </div>

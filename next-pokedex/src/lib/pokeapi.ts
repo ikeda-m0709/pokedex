@@ -197,14 +197,15 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
         const result: evolutionStep[] = []; //ここに進化系統のポケモンを全て詰める
 
         //進化の最初（起点）のポケモンをpushする
-        const raw = await fetchRawPokemon(chain.species.name);
+        const id = chain.species.url.split("/").filter(Boolean).pop(); //idで検索したい
+        const raw = await fetchRawPokemon(String(id));
         if(!raw) return result;
         const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
         const japaneseName = await fetchJapaneseName(chain.species);
 
         result.push({
                 prof: {  
-                    id: raw.id,
+                    id: Number(id),
                     imageUrl,
                     japaneseName,
                 },
@@ -218,7 +219,8 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
             //最初のポケモンが一方向進化
             if(chain.evolves_to.length === 1) {
                 //まず自分をpush
-                const raw = await fetchRawPokemon(next.species.name);
+                const id = next.species.url.split("/").filter(Boolean).pop(); //idで検索したい
+                const raw = await fetchRawPokemon(String(id));
                 if(!raw) return result; //???
                 const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
                 const japaneseName = await fetchJapaneseName(next.species);
@@ -226,7 +228,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
 
                 result.push({
                     prof: {
-                        id: raw.id,
+                        id: Number(id),
                         imageUrl,
                         japaneseName,
                     },
@@ -241,7 +243,8 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                         break;
 
                     case 1: //一方向に進化する　※フシギダネ系
-                        const raw = await fetchRawPokemon(next.evolves_to[0].species.name);
+                        const id = next.evolves_to[0].species.url.split("/").filter(Boolean).pop(); //idで検索したい
+                        const raw = await fetchRawPokemon(String(id));
                         if(!raw) return result; //???
                         const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
                         const japaneseName = await fetchJapaneseName(next.evolves_to[0].species);
@@ -249,7 +252,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
 
                         result.push({
                             prof: {
-                                id: raw.id,
+                                id: Number(id),
                                 imageUrl,
                                 japaneseName,
                             },
@@ -261,7 +264,8 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                     
                     default: //上記以外（多方向に進化する）　※ラルトス系
                         for(const n of next.evolves_to) {
-                        const raw = await fetchRawPokemon(n.species.name);
+                        const id = n.species.url.split("/").filter(Boolean).pop(); //idで検索したい
+                        const raw = await fetchRawPokemon(String(id));
                         if(!raw) return result; //???
                         const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
                         const japaneseName = await fetchJapaneseName(n.species);
@@ -269,7 +273,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
 
                         result.push({
                             prof: {
-                                id: raw.id,
+                                id: Number(id),
                                 imageUrl,
                                 japaneseName,
                             },
@@ -284,7 +288,8 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
             //最初のポケモンが多方向進化
             if(chain.evolves_to.length > 1) {
                 //まず自分をpush
-                const raw = await fetchRawPokemon(next.species.name);
+                const id = next.species.url.split("/").filter(Boolean).pop(); //idで検索したい
+                const raw = await fetchRawPokemon(String(id));
                 if(!raw) return result; //???
                 const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
                 const japaneseName = await fetchJapaneseName(next.species);
@@ -292,7 +297,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
 
                 result.push({
                     prof: {
-                        id: raw.id,
+                        id: Number(id),
                         imageUrl,
                         japaneseName,
                     },
@@ -303,7 +308,8 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
                 //さらに進化するか
                 if(next.evolves_to.length > 0){ //自分も進化する（※カジッチュ系）
                     for(const n of next.evolves_to) {
-                        const raw = await fetchRawPokemon(n.species.name);
+                        const id = n.species.url.split("/").filter(Boolean).pop(); //idで検索したい
+                        const raw = await fetchRawPokemon(String(id));
                         if(!raw) return result; //???
                         const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default ?? "/image/dummy-pokemon.png";
                         const japaneseName = await fetchJapaneseName(n.species);
@@ -311,7 +317,7 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
 
                         result.push({
                             prof: {
-                                id: raw.id,
+                                id: Number(id),
                                 imageUrl,
                                 japaneseName,
                             },

@@ -51,7 +51,7 @@ export async function SearchResult ({ query }: Props) {
                 {matchedProcessedPokemons.length > 0 ? 
                     <div className='mx-7 mb-30'>
                         <p className='text-left'>「{query}」の検索結果: <span className='font-bold'>{matchedProcessedPokemons.length}件</span> 見つかりました</p>
-                        <div className='mt-3 grid grid-cols-5 gap-5'>
+                        <div className='mt-3 grid grid-cols-2 sm:grid-cols-5 gap-5'>
                             {matchedProcessedPokemons.map((pokemon:ProcessedPokemon) => (
                                 <PokemonCard key={pokemon.id} pokemon={pokemon} />
                             ))}

@@ -21,7 +21,7 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
         {/*1匹目のポケモンの箱*/}
         <div className='mt-2'> {/*進化の起点のみ別表示 */}
           <div className='text-center max-w-40'>
-            <PokemonCard key={parent.prof.id} pokemon={parent.prof} cardClassName='text-[1.1rem] font-bold'/>
+            <PokemonCard pokemon={parent.prof} cardClassName='text-[1.1rem] font-bold'/>
             {data.length === 1 && <p className='mt-5 font-bold'>※進化系統なし</p>}
           </div>
         </div>
@@ -289,8 +289,9 @@ export default async function EvolutionDetailPage({ data }: {data: evolutionStep
                 )
               })}
             </div>
-            <div className='m-5 px-5 pb-5 flex flex-row flex-wrap justify-end gap-10 bg-[lab(97_-1.5_0.5)] rounded-2xl'>
+            
               {/*②の自分も進化有りを後に表示する */}
+            <div className='m-5 px-5 pb-5 flex flex-row flex-wrap justify-end gap-10 bg-[lab(97_-1.5_0.5)] rounded-2xl'>
               {child
                 .filter(p => p.countParentBranching === 1)
                 .map(p => {

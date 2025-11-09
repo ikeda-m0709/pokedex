@@ -17,11 +17,13 @@ const Header = () => {
 
   return (
     <header className='bg-white'>
-        <div className="flex items-center h-16 p-3 border-b border-gray-300">
-            <Link href='/' className='text-xl mr-5 font-bold'>ポケモン図鑑</Link>
-            <nav className='flex space-x-5'>
+        <div className="text-center sm:flex items-center mx-5 py-3 sm:py-5 border-b border-gray-300">
+            <div className=''>
+                <Link href='/' className='text-xl mr-0 sm:mr-5 font-bold'>ポケモン図鑑</Link>
+            </div>
+            <nav className='mt-3 sm:mt-0 space-x-5'>
                 {navigationItems.map((item) => (
-                    <Link key={item.href} href={item.href} className={ clsx (pathname === item.href ? `text-blue-600 font-bold` : `text-gray-600`)}>{item.label}</Link>
+                    <Link key={item.href} href={item.href} className={ clsx(pathname === item.href ? `text-blue-500 font-bold` : `text-gray-600`)}>{item.label}</Link>
                 ))}
             </nav>
         </div>

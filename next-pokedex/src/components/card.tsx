@@ -8,7 +8,7 @@ type PokemonCardProps = {
     cardClassName?: string;
 }
 
-export default async function PokemonCard({pokemon, cardClassName='text-2xl font-bold'}: PokemonCardProps) {
+export default async function PokemonCard({pokemon, cardClassName='text-lg sm:text-2xl font-bold'}: PokemonCardProps) {
 
     return (
         <Card>
