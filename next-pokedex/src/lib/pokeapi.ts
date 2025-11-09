@@ -194,6 +194,8 @@ export async function getEvolutionDetails(chain: ChainLink):Promise<ProcessedEvo
 }
 
 //③↑の①で取得したchainと、②の進化条件詳細を使い、進化段階ごとの進化条件情報の網羅版を取得
+
+/*最初のやつを修正して、だめだったやつ
 export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionStep[]> {
     const result: evolutionStep[] = [];
 
@@ -241,4 +243,82 @@ export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionSt
     console.log("最終結果：" + result);
     return result;    
 }
+*/
 
+
+
+
+
+export async function buildEvolutionSteps(chain: ChainLink): Promise<evolutionStep[]> {
+        const result: evolutionStep[] = []; //ここに進化系統のポケモンを全て詰める
+
+        //進化の最初（起点）のポケモンをpushする
+        const raw = await fetchRawPokemon(chain.species.name);
+        if(!raw) return result;
+        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+        const japaneseName = await fetchJapaneseName(chain.species);
+
+        result.push({
+                prof: {  
+                    id: raw.id,
+                    imageUrl,
+                    japaneseName,
+                },
+                details:[], //最初のポケモンは進化してないから、取得してもどうせ空なので
+                countparentBranching:0, //最初のポケモンは進化してないから、自分の前がいないので必ず0
+                countBranching:chain.evolves_to.length  //自分が、0（進化なし）か、1（一方向進化）、複数（多方向進化）かどうか
+            });
+        
+        //次のポケモンをpushする　chain.evolves_toの中には、次の進化のevolution_detailsとevolves_toが入ってる
+        for(const next of chain.evolves_to) {
+            //最初のポケモンが一方向進化かどうか
+            if(chain.evolves_to.length === 1) {
+                ////////////////////////////////ここから作業！！！ラルトス系か、ディグダ系か、フシギダネ系か
+            }
+
+            //最初のポケモンが多方向進化
+            if(chain.evolves_to.length > 1) {
+                //まず自分をpush
+                const raw = await fetchRawPokemon(next.species.name);
+                if(!raw) return result; //???
+                const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+                const japaneseName = await fetchJapaneseName(next.species);
+                const details = await getEvolutionDetails(next);
+
+                result.push({
+                    prof: {
+                        id: raw.id,
+                        imageUrl,
+                        japaneseName,
+                    },
+                    details, //最初のポケが自分に進化するための条件たち
+                    countparentBranching: chain.evolves_to.length, //最初のポケモンの進化分岐（多方向進化）
+                    countBranching:next.evolves_to.length  //自分が、0（進化なし）か、1（一方向進化）、複数（多方向進化）かどうか
+                });
+                //さらに進化するか
+                if(next.evolves_to.length > 0){ //自分も進化する（※カジッチュ系）
+                    for(const n of next.evolves_to) {
+                        const raw = await fetchRawPokemon(n.species.name);
+                        if(!raw) return result; //???
+                        const imageUrl = raw.sprites.other?.['official-artwork']?.front_default ?? raw.sprites.front_default;
+                        const japaneseName = await fetchJapaneseName(n.species);
+                        const details = await getEvolutionDetails(n);
+
+                        result.push({
+                            prof: {
+                                id: raw.id,
+                                imageUrl,
+                                japaneseName,
+                            },
+                            details, //最初のポケが自分に進化するための条件たち
+                            countparentBranching: next.evolves_to.length, //自分の前のポケモンの進化有無
+                            countBranching:n.evolves_to.length  //自分が、0（進化なし）か、1（一方向進化）、複数（多方向進化）かどうか
+                        });
+                    }
+                }
+            }
+        }
+
+    return result;
+
+}

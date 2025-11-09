@@ -152,13 +152,13 @@ export async function getTotalPokemonCount(): Promise<number> {
 export async function getEvolution(id: string): Promise<ChainLink | null> {
     const species = await fetchSpecies(id);
     if(!species) return null;
-    const evolutionURL = species.evolution_chain.url; //⇐で指定されたURLにアクセスすると、進化の詳細が取得できる（例：https://pokeapi.co/api/v2/evolution-chain/1/）※ポケモンのIDと進化チェーンのIDは一致しないので注意（いきなりこのURLのidを変えれば良い、わけではない）
+    const evolutionURL = species.evolution_chain.url; //⇐で指定されたURLにアクセスすると、進化情報ページが取得できる（例：https://pokeapi.co/api/v2/evolution-chain/1/）※ポケモンのIDと進化チェーンのIDは一致しないので注意（いきなりこのURLのidを変えれば良い、わけではない）
     const evolRes = await fetch(evolutionURL);
     if(!evolRes.ok) return null;
     const evolData = await evolRes.json(); //.json()しないと、型がresponseになる
 
     //evolDataからchainの中身の取得
-    const chain: ChainLink = evolData.chain;
+    const chain: ChainLink = evolData.chain; //ここが、進化情報ページhttps://pokeapi.co/api/v2/evolution-chain/{id}　※ポケモンのIDと進化チェーンのIDは一致しない
     return chain;
 }
 

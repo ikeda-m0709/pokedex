@@ -181,9 +181,51 @@ export interface ProcessedEvolutionDetail {
   turn_upside_down: boolean;
 }
 
+/*修正前のコード
 export interface evolutionStep {
   prof: EvolutionProf; // ポケモンの基本情報（画像・名前・ID）
   details: ProcessedEvolutionDetail[]; // 進化条件
   isBranching: boolean;  // 自分の次が分岐進化かどうか（↓の割り出し用）
   parentIsBranching: boolean;  // 自分の前（親）が分岐進化かどうか（CSS切り替え用）
 }
+*/
+
+export interface evolutionStep {
+  prof: EvolutionProf; // ポケモンの基本情報（画像・名前・ID）
+  details: ProcessedEvolutionDetail[]; // 進化条件
+  countparentBranching: number // 自分の進化前のポケモンのevolves_to.lengthが、0（進化なし）か、1（一方向進化）、複数（多方向進化）の判断
+  countBranching: number;  // 自分のevolves_to.lengthが、0（進化なし）か、1（一方向進化）、複数（多方向進化）の判断
+}
+
+/*進化の最初のポケモン
+export interface evolutionStep {
+  prof: EvolutionProf; // ポケモンの基本情報（画像・名前・ID）
+  details: ProcessedEvolutionDetail[]; // 進化条件
+  countparentBranching: (必ず)0 // 自分の進化前のポケモンのevolves_to.lengthが、0（進化なし）か、1（一方向進化）、複数（多方向進化）の判断
+  countBranching: number;  // 自分のevolves_to.lengthが、0（進化なし）か、1（一方向進化）、複数（多方向進化）の判断
+}
+上記かつ、countBranchingが0だったら自分一代しかないポケモン
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
